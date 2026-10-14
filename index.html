@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Peso</title>
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--ink:#1d1d1b;--muted:#6b6b66;--line:#e4e3de;--accent:#2563eb;--dot:#9ca3af;--good:#15803d;--bad:#b42318}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1f1f1d;--ink:#ecebe6;--muted:#9a9993;--line:#33322f;--accent:#60a5fa;--dot:#6b7280;--good:#4ade80;--bad:#f97066}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+h1{font-size:20px;margin:0}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:16px}
+h2{font-size:14px;margin:0 0 12px;color:var(--muted);font-weight:600}
+input,select,textarea,button{font:inherit;color:inherit}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+button{padding:8px 14px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+button.ghost{background:none;border:1px solid var(--line);color:var(--ink)}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;align-items:end}
+label{display:block;font-size:13px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12px;color:var(--muted)}
+.good{color:var(--good)}.bad{color:var(--bad)}
+.chart{position:relative;height:260px}
+details{border-top:1px solid var(--line);padding:8px 0}
+summary{cursor:pointer;font-variant-numeric:tabular-nums}
+summary span{display:inline-block;margin-right:14px}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-variant-numeric:tabular-nums}
+td{padding:4px 6px;border-bottom:1px solid var(--line)}td+td{text-align:right}
+tr.day{cursor:pointer}tr.day:hover{background:var(--bg)}
+#msg{min-height:1.4em;color:var(--muted);font-size:13px;margin-top:8px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Peso</h1>
+    <div>
+      <button id="refresh" class="ghost" hidden aria-label="Recargar">↻</button>
+      <button id="login">Entrar con Google</button>
+      <button id="logout" class="ghost" hidden>Salir</button>
+    </div>
+  </header>
+  <div id="msg" role="status"></div>
+
+  <section id="setup" hidden>
+    <h2>Hoja de cálculo</h2>
+    <div class="row">
+      <label>URL o ID del Google Sheet<input id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/…"></label>
+      <button id="loadTabs" class="ghost">Buscar pestañas</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <label>Pestaña<select id="tab"></select></label>
+      <button id="useSheet">Usar esta hoja</button>
+    </div>
+  </section>
+
+  <div id="app" hidden>
+    <section class="kpis">
+      <div class="kpi"><span>Último peso</span><b id="kLast">—</b><span id="kLastDate"></span></div>
+      <div class="kpi"><span>Media semana</span><b id="kAvg">—</b><span id="kDelta"></span></div>
+      <div class="kpi"><span>Mínimo semana</span><b id="kMin">—</b><span id="kSteps"></span></div>
+    </section>
+
+    <section>
+      <h2>Registro</h2>
+      <form id="entry" class="row">
+        <label>Fecha<input id="date" type="date" required></label>
+        <label>Pasos<input id="steps" type="number" min="0" inputmode="numeric"></label>
+        <label>Peso (kg)<input id="weight" type="number" step="0.1" min="0" inputmode="decimal"></label>
+        <button>Guardar</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Evolución</h2>
+      <div class="chart"><canvas id="chart" role="img" aria-label="Evolución del peso diario y media de 7 días"></canvas></div>
+    </section>
+
+    <section>
+      <h2>Semanas</h2>
+      <div id="weeks"></div>
+      <button id="changeSheet" class="ghost" style="margin-top:12px">Cambiar hoja</button>
+    </section>
+  </div>
+</main>
+
+<script>
+// Pega aquí tu OAuth Client ID (ver README). No es un secreto.
+const CLIENT_ID = '395106369268-tt57n7rmavsa49g3hb5rfjl4vc6vvqb4.apps.googleusercontent.com';
+const API = 'https://sheets.googleapis.com/v4/spreadsheets/';
+// Columnas: A=Fecha, B=Pasos, D=Peso, G=Notas. C, E y F son fórmulas de la hoja y la app no las toca.
+
+const $ = id => document.getElementById(id);
+const msg = t => $('msg').textContent = t || '';
+const on = (id, ev, fn) => $(id).addEventListener(ev, e => Promise.resolve(fn(e)).catch(err => msg('⚠️ ' + err.message)));
+
+let token = null, tokenClient, chart, days = [];
+let cfg = null;
+try { cfg = JSON.parse(localStorage.getItem('cfg')); } catch {}
+try { const t = JSON.parse(sessionStorage.getItem('tok')); if (t && t.exp > Date.now()) token = t.v; } catch {}
+
+const tabRef = () => `'${cfg.tab.replace(/'/g, "''")}'`;
+const range = a1 => encodeURIComponent(`${tabRef()}!${a1}`);
+const num = v => v === '' || v == null ? null : typeof v === 'number' ? v : (parseFloat(String(v).replace(',', '.')) || null);
+const serialToISO = s => new Date(Date.UTC(1899, 11, 30) + Math.round(s) * 864e5).toISOString().slice(0, 10);
+const addDays = (iso, n) => { const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const monday = iso => addDays(iso, -((new Date(iso + 'T00:00:00Z').getUTCDay() + 6) % 7));
+const avg = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : null;
+const fmt = (x, d = 1) => x == null ? '—' : x.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d });
+const dm = iso => iso.slice(8, 10) + '/' + iso.slice(5, 7);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+async function api(path, opts = {}) {
+  const r = await fetch(API + path, { ...opts, headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' } });
+  if (r.status === 401) { token = null; sessionStorage.removeItem('tok'); start(); throw new Error('Sesión caducada, vuelve a entrar'); }
+  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error?.message || 'Error ' + r.status);
+  return r.json();
+}
+
+function start() {
+  $('login').hidden = !!token;
+  $('logout').hidden = $('refresh').hidden = !token;
+  $('setup').hidden = !token || !!cfg;
+  $('app').hidden = !token || !cfg;
+  if (token && cfg) load().catch(err => msg('⚠️ ' + err.message));
+}
+
+on('login', 'click', () => {
+  if (CLIENT_ID.startsWith('TU_')) return msg('⚠️ Configura CLIENT_ID en index.html (ver README)');
+  tokenClient ??= google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/spreadsheets',
+    callback: r => {
+      if (r.error) return msg('⚠️ Login: ' + r.error);
+      token = r.access_token;
+      sessionStorage.setItem('tok', JSON.stringify({ v: token, exp: Date.now() + (r.expires_in - 60) * 1000 }));
+      start();
+    },
+  });
+  tokenClient.requestAccessToken();
+});
+
+on('logout', 'click', () => {
+  google.accounts.oauth2.revoke(token);
+  token = null; sessionStorage.removeItem('tok'); start();
+});
+
+on('loadTabs', 'click', async () => {
+  const v = $('sheetUrl').value.trim();
+  const id = (v.match(/\/d\/([\w-]+)/) || [, v])[1];
+  const s = await api(id + '?fields=properties.title,sheets.properties.title');
+  $('tab').innerHTML = '';
+  s.sheets.forEach(x => $('tab').add(new Option(x.properties.title)));
+  $('tab').dataset.id = id;
+  msg('Hoja encontrada: ' + s.properties.title);
+});
+
+on('useSheet', 'click', () => {
+  if (!$('tab').dataset.id) return msg('Primero busca las pestañas');
+  cfg = { id: $('tab').dataset.id, tab: $('tab').value };
+  localStorage.setItem('cfg', JSON.stringify(cfg));
+  start();
+});
+
+on('changeSheet', 'click', () => { cfg = null; localStorage.removeItem('cfg'); start(); });
+on('refresh', 'click', load);
+// Cambios hechos directamente en el Sheet: se recargan al volver a la pestaña
+document.addEventListener('visibilitychange', () => { if (!document.hidden && token && cfg) load().catch(err => msg('⚠️ ' + err.message)); });
+
+async function load() {
+  msg('Cargando…');
+  const r = await api(`${cfg.id}/values/${range('A2:G')}?valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=SERIAL_NUMBER`);
+  days = (r.values || [])
+    .map((v, i) => ({ row: i + 2, date: typeof v[0] === 'number' ? serialToISO(v[0]) : null, steps: num(v[1]), weight: num(v[3]), note: v[6] ? String(v[6]) : '' }))
+    .filter(d => d.date)
+    .sort((a, b) => a.date < b.date ? -1 : 1);
+  render();
+  msg('');
+}
+
+function render() {
+  const groups = {};
+  days.forEach(d => (groups[monday(d.date)] ??= []).push(d));
+  const weeks = Object.entries(groups)
+    .map(([start, ds]) => {
+      const w = ds.map(d => d.weight).filter(x => x != null);
+      return {
+        start, days: ds,
+        weight: avg(w), min: w.length ? Math.min(...w) : null,
+        steps: avg(ds.map(d => d.steps).filter(x => x != null)),
+        note: ds.map(d => d.note).filter(Boolean).join('\n'),
+        noteRow: Math.min(...ds.map(d => d.row)),
+      };
+    })
+    .filter(w => w.weight != null || w.steps != null || w.note)
+    .reverse();
+
+  // KPIs
+  const last = [...days].reverse().find(d => d.weight != null);
+  $('kLast').textContent = last ? fmt(last.weight) + ' kg' : '—';
+  $('kLastDate').textContent = last ? dm(last.date) : '';
+  const [cur, prev] = weeks.filter(w => w.weight != null);
+  $('kAvg').textContent = cur ? fmt(cur.weight, 2) + ' kg' : '—';
+  $('kMin').textContent = cur ? fmt(cur.min) + ' kg' : '—';
+  $('kSteps').textContent = cur?.steps != null ? fmt(cur.steps, 0) + ' pasos/día' : '';
+  const delta = cur && prev ? cur.weight - prev.weight : null;
+  $('kDelta').textContent = delta == null ? '' : `${delta > 0 ? '▲ +' : '▼ '}${fmt(delta, 2)} vs anterior`;
+  $('kDelta').className = delta == null ? '' : delta > 0 ? 'bad' : 'good';
+
+  // Gráfica: peso diario + media móvil de 7 días
+  const pts = days.filter(d => d.weight != null);
+  const rolling = pts.map(d => avg(pts.filter(x => x.date <= d.date && x.date > addDays(d.date, -7)).map(x => x.weight)));
+  const muted = css('--muted');
+  chart?.destroy();
+  chart = new Chart($('chart'), {
+    type: 'line',
+    data: {
+      labels: pts.map(d => dm(d.date)),
+      datasets: [
+        { label: 'Peso', data: pts.map(d => d.weight), borderColor: css('--dot'), backgroundColor: css('--dot'), borderWidth: 1, pointRadius: 4, pointHoverRadius: 6 },
+        { label: 'Media 7 días', data: rolling, borderColor: css('--accent'), backgroundColor: css('--accent'), borderWidth: 2, pointRadius: 0, tension: 0.3 },
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: muted, usePointStyle: true } },
+        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${fmt(c.parsed.y, c.datasetIndex ? 2 : 1)} kg` } },
+      },
+      scales: {
+        x: { ticks: { color: muted, maxTicksLimit: 8 }, grid: { display: false } },
+        y: { ticks: { color: muted }, grid: { color: css('--line') } },
+      },
+    },
+  });
+
+  // Semanas
+  $('weeks').replaceChildren(...weeks.map((w, i) => {
+    const el = document.createElement('details');
+    el.open = i === 0;
+    el.innerHTML = `<summary><span><b>Semana ${dm(w.start)}</b></span><span>x̄ ${fmt(w.weight, 2)} kg</span><span>mín ${fmt(w.min)}</span><span>${fmt(w.steps, 0)} pasos</span></summary>
+      <table><tbody></tbody></table>
+      <label>Notas<textarea rows="3"></textarea></label>
+      <button class="ghost" style="margin-top:6px">Guardar notas</button>`;
+    el.querySelector('tbody').replaceChildren(...w.days.map(d => {
+      const tr = document.createElement('tr');
+      tr.className = 'day';
+      tr.innerHTML = `<td>${new Date(d.date + 'T00:00:00Z').toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: '2-digit', timeZone: 'UTC' })}</td><td>${fmt(d.steps, 0)}</td><td>${fmt(d.weight)}</td>`;
+      tr.onclick = () => { $('date').value = d.date; fill(); $('weight').focus(); };
+      return tr;
+    }));
+    const ta = el.querySelector('textarea');
+    ta.value = w.note;
+    el.querySelector('button').onclick = () => saveNote(w.noteRow, ta.value).catch(err => msg('⚠️ ' + err.message));
+    return el;
+  }));
+
+  if (!$('date').value) { $('date').value = new Date().toLocaleDateString('sv'); fill(); }
+}
+
+function fill() {
+  const d = days.find(x => x.date === $('date').value);
+  $('steps').value = d?.steps ?? '';
+  $('weight').value = d?.weight ?? '';
+}
+on('date', 'change', fill);
+
+on('entry', 'submit', async e => {
+  e.preventDefault();
+  const date = $('date').value;
+  const steps = $('steps').value === '' ? '' : +$('steps').value;
+  const weight = $('weight').value === '' ? '' : +$('weight').value;
+  const d = days.find(x => x.date === date);
+  msg('Guardando…');
+  if (d) {
+    await api(`${cfg.id}/values:batchUpdate`, { method: 'POST', body: JSON.stringify({
+      valueInputOption: 'RAW',
+      data: [{ range: `${tabRef()}!B${d.row}`, values: [[steps]] }, { range: `${tabRef()}!D${d.row}`, values: [[weight]] }],
+    }) });
+  } else {
+    // Fecha sin fila en la hoja: se añade al final (null = no tocar la columna C)
+    await api(`${cfg.id}/values/${range('A:G')}:append?valueInputOption=USER_ENTERED&insertDataOption=OVERWRITE`, {
+      method: 'POST', body: JSON.stringify({ values: [[date, steps, null, weight]] }),
+    });
+  }
+  await load();
+  msg('Guardado ✓');
+});
+
+// Las notas van en la primera fila de la semana (celda superior del bloque combinado)
+async function saveNote(row, text) {
+  msg('Guardando…');
+  await api(`${cfg.id}/values/${range('G' + row)}?valueInputOption=RAW`, { method: 'PUT', body: JSON.stringify({ values: [[text]] }) });
+  await load();
+  msg('Notas guardadas ✓');
+}
+
+start();
+</script>
+</body>
+</html>
