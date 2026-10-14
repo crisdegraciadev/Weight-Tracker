@@ -44,6 +44,7 @@ button {
 
 label {
   display: grid;
+  min-width: 0; /* grid items default to min-width: auto, which lets wide controls overflow */
   gap: 6px;
   font-size: var(--text-md);
   font-weight: 500;
@@ -76,6 +77,27 @@ select {
 
 textarea {
   resize: vertical;
+}
+
+/*
+ * iOS Safari renders date inputs natively: an intrinsic minimum width (overflows its container),
+ * extra padding (taller than other fields) and centered text. Feature query targets iOS only,
+ * so desktop browsers keep their native calendar picker.
+ */
+@supports (-webkit-touch-callout: none) {
+  input[type='date'] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    min-width: 0;
+    line-height: calc(var(--control-height) - 2px);
+    padding-block: 0;
+
+    &::-webkit-date-and-time-value {
+      margin: 0;
+      text-align: left;
+    }
+  }
 }
 
 table {
