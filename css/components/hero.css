@@ -1,0 +1,34 @@
+/* Centered card used by the sign-in and sheet picker screens */
+.hero {
+  max-width: 440px;
+  margin: 10vh auto 0;
+  text-align: center;
+
+  .brand-logo {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto var(--space-4);
+    border-radius: var(--radius-xl);
+
+    svg {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  h2 {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-xl);
+  }
+
+  p {
+    margin-bottom: var(--space-5);
+    color: var(--color-text-secondary);
+  }
+}
+
+.hero-form {
+  display: grid;
+  gap: var(--space-3);
+  text-align: left;
+}

@@ -1,0 +1,15 @@
+/* All-time bests: value on top, date below */
+.records-card .records {
+  gap: var(--space-3);
+
+  dd {
+    display: grid;
+    font-variant-numeric: tabular-nums;
+
+    small {
+      font-size: var(--text-xs);
+      font-weight: 400;
+      color: var(--color-text-muted);
+    }
+  }
+}

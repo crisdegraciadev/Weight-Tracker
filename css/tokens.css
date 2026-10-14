@@ -1,0 +1,78 @@
+/*
+ * Design tokens.
+ * Colors use light-dark(), so one declaration covers both themes. The active theme comes from
+ * color-scheme: the system preference by default, or the [data-theme] override set by the toggle.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces and text */
+  --color-bg: light-dark(#f4f5f9, #0d0e12);
+  --color-surface: light-dark(#ffffff, #17181d);
+  --color-text: light-dark(#0f172a, #f0efec);
+  --color-text-secondary: light-dark(#475569, #c3c2b7);
+  --color-text-muted: light-dark(#8a8f9c, #898781);
+  --color-border: light-dark(#e6e8ef, #2a2b31);
+
+  /* Accents (validated categorical palette, also used by the charts) */
+  --color-blue: light-dark(#2a78d6, #3987e5);
+  --color-orange: light-dark(#eb6834, #d95926);
+  --color-aqua: light-dark(#1baf7a, #199e70);
+  --color-violet: light-dark(#6250d6, #9085e9);
+
+  /* Status */
+  --color-good: light-dark(#006300, #0ca30c);
+  --color-bad: light-dark(#d03b3b, #e66767);
+
+  --gradient-brand: linear-gradient(135deg, var(--color-blue), var(--color-violet));
+
+  /* Elevation */
+  --shadow-color: light-dark(rgb(15 23 42 / 6%), rgb(0 0 0 / 28%));
+  --shadow-card: 0 1px 2px var(--shadow-color), 0 4px 16px var(--shadow-color);
+  --shadow-overlay: 0 20px 50px rgb(0 0 0 / 30%);
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-base: 15px;
+  --text-lg: 17px;
+  --text-xl: 20px;
+  --text-2xl: 28px;
+
+  /* Controls and motion */
+  --control-height: 42px;
+  --duration-fast: 0.15s;
+
+  /* Stacking order */
+  --z-raised: 1;
+  --z-tooltip: 30;
+  --z-toast: 40;
+
+  /* Breakpoints (media queries cannot read custom properties; kept here as reference):
+     tablet <= 980px, phone <= 520px */
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}

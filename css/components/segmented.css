@@ -1,0 +1,37 @@
+/* Segmented control: a group of toggle buttons where one is active (aria-pressed="true") */
+.segmented {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+
+  button {
+    padding: 6px var(--space-3);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--color-text-secondary);
+    font-size: var(--text-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background var(--duration-fast),
+      color var(--duration-fast);
+
+    &:hover {
+      color: var(--color-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-blue);
+      outline-offset: 1px;
+    }
+
+    &[aria-pressed='true'] {
+      background: var(--gradient-brand);
+      color: #fff;
+    }
+  }
+}

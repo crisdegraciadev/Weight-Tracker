@@ -1,0 +1,31 @@
+/* Small decorative pieces: tinted icon square and delta pill */
+.icon-chip {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+}
+
+/* Week-over-week change. Always shows sign and arrow, so meaning never relies on color alone. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+
+  &.good {
+    color: var(--color-good);
+    background: color-mix(in srgb, var(--color-good) 14%, transparent);
+  }
+
+  &.bad {
+    color: var(--color-bad);
+    background: color-mix(in srgb, var(--color-bad) 14%, transparent);
+  }
+}

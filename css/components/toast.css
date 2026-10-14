@@ -1,0 +1,20 @@
+/* Floating status message at the bottom of the screen; hidden while empty */
+.toast {
+  position: fixed;
+  bottom: var(--space-5);
+  left: 50%;
+  z-index: var(--z-toast);
+  max-width: calc(100% - 32px);
+  padding: 10px var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: 14px;
+  box-shadow: var(--shadow-card);
+  transform: translateX(-50%);
+  cursor: pointer;
+
+  &:empty {
+    display: none;
+  }
+}

@@ -1,0 +1,56 @@
+/*
+ * Tooltip for icon buttons: <button data-tooltip="Text">.
+ * Right-aligned so it never overflows the viewport on the right edge.
+ */
+[data-tooltip] {
+  position: relative;
+  z-index: var(--z-raised);
+  /* Lower the button only after the tooltip has faded out (see :hover below) */
+  transition:
+    filter var(--duration-fast),
+    transform 0.05s,
+    z-index 0s var(--duration-fast);
+
+  &::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity var(--duration-fast),
+      transform var(--duration-fast);
+  }
+
+  /* The hover filter creates its own stacking context, so the whole button must be raised */
+  &:hover,
+  &:focus-visible {
+    z-index: var(--z-tooltip);
+    transition:
+      filter var(--duration-fast),
+      transform 0.05s,
+      z-index 0s;
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Touch screens have no real hover */
+  @media (hover: none) {
+    &:hover::after {
+      opacity: 0;
+    }
+  }
+}

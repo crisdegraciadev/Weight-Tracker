@@ -1,0 +1,74 @@
+/* Top bar: brand on the left, actions on the right */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+
+  h1 {
+    font-size: 18px;
+    line-height: 1.2;
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.brand-logo {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-brand);
+  color: #fff;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-violet) 35%, transparent);
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.brand-text {
+  min-width: 0;
+}
+
+.brand-subtitle {
+  overflow: hidden;
+  font-size: var(--text-md);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  @media (max-width: 520px) {
+    display: none;
+  }
+}
+
+.app-header-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Shows the moon in light mode and the sun in dark mode (data-mode set by theme-toggle.js) */
+.theme-toggle {
+  .icon-sun {
+    display: none;
+  }
+
+  &[data-mode='dark'] {
+    .icon-sun {
+      display: block;
+    }
+
+    .icon-moon {
+      display: none;
+    }
+  }
+}

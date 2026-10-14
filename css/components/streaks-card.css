@@ -1,0 +1,48 @@
+/* Current and best streaks side by side, with the logging rate below */
+.streaks-card {
+  display: flex;
+  flex-direction: column;
+
+  .streaks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .streak {
+    display: grid;
+    gap: 2px;
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+
+    .label {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    b {
+      font-size: var(--text-2xl);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+
+      small {
+        margin-left: var(--space-1);
+        font-size: var(--text-md);
+        font-weight: 500;
+        color: var(--color-text-muted);
+      }
+    }
+
+    .best {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+    }
+  }
+
+  .stat-list {
+    margin-top: auto;
+  }
+}

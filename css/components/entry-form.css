@@ -1,0 +1,22 @@
+/* Daily entry: date, weight and steps in a single row */
+.entry-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: var(--space-3) var(--space-4);
+  align-items: end;
+
+  .card-title {
+    grid-column: 1 / -1;
+    margin-bottom: var(--space-1);
+  }
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr 1fr;
+
+    label:first-of-type,
+    label:last-of-type,
+    .btn {
+      grid-column: 1 / -1;
+    }
+  }
+}

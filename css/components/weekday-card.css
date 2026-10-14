@@ -1,0 +1,83 @@
+/*
+ * Weekday pattern: one column per weekday with a diverging weight bar
+ * (up = heavier than the week's average, down = lighter) and a steps bar.
+ * Bar sizes come from --size (0-1), set inline by weekday-card.js.
+ */
+.weekday-card {
+  display: flex;
+  flex-direction: column;
+
+  .summary {
+    margin-top: auto;
+    font-size: var(--text-md);
+    color: var(--color-text-secondary);
+  }
+}
+
+.weekday-chart {
+  display: grid;
+  grid-template-columns: auto repeat(7, 1fr);
+  gap: var(--space-1) 6px;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+
+  .row-label {
+    padding-right: var(--space-1);
+    color: var(--color-text-muted);
+    text-align: left;
+  }
+
+  .day {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+  }
+
+  .value {
+    color: var(--color-text-muted);
+  }
+
+  /* Weight: track centered on zero */
+  .diverging {
+    position: relative;
+    height: 44px;
+    background: linear-gradient(var(--color-border), var(--color-border)) center / 100% 1px no-repeat;
+
+    i {
+      position: absolute;
+      left: 20%;
+      right: 20%;
+      height: calc(var(--size) * 50%);
+      border-radius: 3px;
+    }
+
+    .up {
+      bottom: 50%;
+      background: var(--color-bad);
+    }
+
+    .down {
+      top: 50%;
+      background: var(--color-good);
+    }
+  }
+
+  /* Steps: bars from the bottom */
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 44px;
+
+    i {
+      width: 60%;
+      height: calc(var(--size) * 100%);
+      min-height: 2px;
+      border-radius: 3px 3px 0 0;
+      background: var(--color-aqua);
+    }
+  }
+}

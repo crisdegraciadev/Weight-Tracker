@@ -1,0 +1,116 @@
+/* Goal cards (weight and steps): headline numbers plus details, or the form to set the goal */
+.goal-card {
+  display: flex;
+  flex-direction: column;
+
+  .card-title {
+    margin-bottom: var(--space-3);
+
+    .btn {
+      margin-left: auto;
+    }
+  }
+
+  .numbers {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    color: var(--color-text-secondary);
+
+    b {
+      font-size: var(--text-xl);
+      color: var(--color-text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    small {
+      margin-left: var(--space-1);
+      color: var(--color-text-muted);
+    }
+
+    .highlight {
+      color: var(--accent);
+    }
+  }
+
+  .progress {
+    overflow: hidden;
+    height: 10px;
+    margin: 10px 0 var(--space-2);
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+
+    i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--color-aqua), var(--color-blue));
+      transition: width 0.4s;
+    }
+  }
+
+  .meta {
+    font-size: var(--text-md);
+    color: var(--color-text-muted);
+  }
+
+  /* Separates the details list from the headline */
+  .stat-list {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+.goal-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+/*
+ * Monday-Sunday status of the step goal. Filled = met, outlined = below goal,
+ * dashed = no entry, faded = future: shape differs too, so color is never the only cue.
+ */
+.day-dots {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    max-width: 36px;
+    width: 100%;
+    justify-self: center;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .met {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .missed {
+    border: 2px solid var(--accent);
+    color: var(--accent);
+  }
+
+  .empty {
+    border: 2px dashed var(--color-border);
+    color: var(--color-text-muted);
+  }
+
+  .future {
+    background: color-mix(in srgb, var(--color-text-muted) 10%, transparent);
+    color: var(--color-text-muted);
+  }
+}

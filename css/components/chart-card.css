@@ -1,0 +1,5 @@
+/* Card hosting a Chart.js canvas; the wrapper gives the chart a fixed height to fill */
+.chart-card .canvas {
+  position: relative;
+  height: 280px;
+}

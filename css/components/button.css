@@ -1,0 +1,54 @@
+/* Buttons. Variants: .btn-ghost (secondary), .btn-icon (square, icon only), .btn-sm, .btn-block */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--control-height);
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--gradient-brand);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    filter var(--duration-fast),
+    transform 0.05s;
+
+  &:hover {
+    filter: brightness(1.08);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
+  }
+}
+
+.btn-ghost {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}
+
+.btn-sm {
+  width: 32px;
+  height: 32px;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: var(--space-4);
+}

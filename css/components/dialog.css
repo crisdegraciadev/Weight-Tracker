@@ -1,0 +1,36 @@
+/* Native <dialog> used for confirmations */
+.dialog {
+  width: calc(100% - 32px);
+  max-width: 420px;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-overlay);
+
+  &::backdrop {
+    background: rgb(15 23 42 / 45%);
+    backdrop-filter: blur(3px);
+  }
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: var(--space-2);
+    font-size: var(--text-lg);
+  }
+
+  p {
+    margin-bottom: var(--space-5);
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+  }
+}

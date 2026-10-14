@@ -1,0 +1,48 @@
+/* Headline figure with label and week-over-week change. --accent sets the card color. */
+.kpi-card {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 10%, var(--color-surface)),
+    var(--color-surface) 65%
+  );
+
+  .head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+
+  .value {
+    margin: var(--space-3) 0 var(--space-1);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+
+    small {
+      margin-left: 2px;
+      font-size: var(--text-base);
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-md);
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 520px) {
+    padding: 14px;
+
+    .value {
+      font-size: 22px;
+    }
+  }
+}

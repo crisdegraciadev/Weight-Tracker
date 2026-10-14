@@ -1,0 +1,30 @@
+/*
+ * Stylesheet entry point.
+ * Cascade layers define precedence explicitly: a later layer always wins over an earlier one,
+ * regardless of selector specificity.
+ */
+@layer tokens, base, layout, components;
+
+@import url('tokens.css') layer(tokens);
+@import url('base.css') layer(base);
+@import url('layout.css') layer(layout);
+
+@import url('components/button.css') layer(components);
+@import url('components/card.css') layer(components);
+@import url('components/badge.css') layer(components);
+@import url('components/tooltip.css') layer(components);
+@import url('components/stat-list.css') layer(components);
+@import url('components/segmented.css') layer(components);
+@import url('components/app-header.css') layer(components);
+@import url('components/hero.css') layer(components);
+@import url('components/kpi-card.css') layer(components);
+@import url('components/entry-form.css') layer(components);
+@import url('components/goal-card.css') layer(components);
+@import url('components/steps-weight-card.css') layer(components);
+@import url('components/chart-card.css') layer(components);
+@import url('components/streaks-card.css') layer(components);
+@import url('components/weekday-card.css') layer(components);
+@import url('components/records-card.css') layer(components);
+@import url('components/week-card.css') layer(components);
+@import url('components/dialog.css') layer(components);
+@import url('components/toast.css') layer(components);
