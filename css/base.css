@@ -80,23 +80,21 @@ textarea {
 }
 
 /*
- * iOS Safari renders date inputs natively: an intrinsic minimum width (overflows its container),
- * extra padding (taller than other fields) and centered text. Feature query targets iOS only,
- * so desktop browsers keep their native calendar picker.
+ * Date inputs drop the native look so every browser sizes them like other fields.
+ * Without this, iOS Safari gives them an intrinsic minimum width (overflowing the card),
+ * extra height and centered text. Desktop browsers keep their calendar icon.
  */
-@supports (-webkit-touch-callout: none) {
-  input[type='date'] {
-    -webkit-appearance: none;
-    appearance: none;
-    display: block;
-    min-width: 0;
-    line-height: calc(var(--control-height) - 2px);
-    padding-block: 0;
+input[type='date'] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  text-align: left;
 
-    &::-webkit-date-and-time-value {
-      margin: 0;
-      text-align: left;
-    }
+  &::-webkit-date-and-time-value {
+    margin: 0;
+    text-align: left;
   }
 }
 
