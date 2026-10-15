@@ -9,13 +9,22 @@ import * as repository from './services/tracker-repository.js';
 import { buildWeeks } from './domain/stats.js';
 import { store } from './state.js';
 
-/** Runs a Sheets call; an expired session sends the user back to the sign-in screen. */
+/**
+ * Runs a Sheets call. An expired session is renewed and the call retried once;
+ * if renewal fails (e.g. popup blocked outside a click), back to the sign-in screen.
+ */
 async function withSession(task) {
   try {
     return await task();
   } catch (err) {
-    if (err instanceof SessionExpiredError) store.set({ signedIn: false });
-    throw err;
+    if (!(err instanceof SessionExpiredError)) throw err;
+    try {
+      await auth.signIn();
+    } catch {
+      store.set({ signedIn: false });
+      throw err;
+    }
+    return task();
   }
 }
 
