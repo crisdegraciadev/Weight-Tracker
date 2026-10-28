@@ -1,0 +1,16 @@
+/* Progress bar: <div class="progress" role="progressbar"><i style="width: 40%"></i></div> */
+.progress {
+  overflow: hidden;
+  height: 10px;
+  margin: 10px 0 var(--space-2);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+
+  i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--color-aqua), var(--color-blue));
+    transition: width 0.4s;
+  }
+}

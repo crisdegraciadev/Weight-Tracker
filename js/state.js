@@ -25,7 +25,12 @@ export const store = createStore({
   weeks: [],
   weightGoal: null,
   stepGoal: null,
+  attempts: [], // smoke-free attempts: { row, start, end }
+  smokeFreeSince: null, // start of the attempt in progress
+  smokeCosts: null, // { perDay, packPrice }
+  cravings: [], // { at, intensity, trigger }
   selectedDate: null, // day picked from a week card, shown in the entry form
+  section: 'peso', // 'peso' | 'sin-fumar', from the URL hash
   theme: 'light', // resolved theme, set by the theme toggle
   chartRange: readStorage('chartRange') ?? 'quarter', // 'month' | 'quarter' | 'all'
 });

@@ -13,6 +13,10 @@
     font-size: var(--text-md);
     font-weight: 500;
     color: var(--color-text-secondary);
+
+    .btn {
+      margin-left: auto;
+    }
   }
 
   .value {

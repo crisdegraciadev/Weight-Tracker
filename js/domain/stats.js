@@ -1,5 +1,5 @@
 /* Pure calculations over daily entries (no DOM, no I/O). */
-import { addDays, startOfWeek, weekdayIndex } from '../core/dates.js';
+import { addDays, daysBetween, startOfWeek, weekdayIndex } from '../core/dates.js';
 
 export const average = values => (values.length ? values.reduce((sum, v) => sum + v, 0) / values.length : null);
 
@@ -64,7 +64,6 @@ export function goalProgress(start, current, goal) {
 const TREND_WINDOW_DAYS = 28;
 const TREND_MIN_POINTS = 5;
 const TREND_MIN_SPAN_DAYS = 10;
-const daysBetween = (from, to) => (Date.parse(to) - Date.parse(from)) / 864e5;
 
 /**
  * Linear regression over the weigh-ins of the last 28 days. Less noisy than comparing two days.

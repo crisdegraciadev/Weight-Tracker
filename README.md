@@ -1,6 +1,6 @@
 # Weight Tracker
 
-Static web app to track weight and daily steps, using a Google Sheet as its database. It reads and writes the sheet directly: changes made in the app show up in the sheet and vice versa (the app reloads when you come back to the tab, or with ↻).
+Static web app to track weight, daily steps and smoke-free days, using a Google Sheet as its database. It reads and writes the sheet directly: changes made in the app show up in the sheet and vice versa (the app reloads when you come back to the tab, or with ↻).
 
 No backend, no build step and no npm dependencies: it runs as-is on GitHub Pages.
 
@@ -14,6 +14,14 @@ Row 1 holds the headers.
 
 The app only writes columns A, B, D, G and H; the formulas in C, E and F are never touched.
 Goals are stored next to the data: target weight in `I2` (header "Objetivo" in `I1`) and daily step goal in `J2` (header "Objetivo pasos" in `J1`).
+
+Everything about quitting smoking lives in a separate tab named **Sin fumar** in the same spreadsheet (created on the first save). Row 1 holds the headers; three blocks side by side:
+
+| Columns | Content                                                                                    |
+| ------- | ------------------------------------------------------------------------------------------ |
+| A:C     | Attempts, one per row: start date, end date (relapse; empty = in progress), relapse reason |
+| E2:F2   | Cigarettes per day and pack price (20 cigarettes), for the savings                         |
+| H:J     | Cravings, one per row: date and time, intensity (1-5), situation                           |
 
 ## Architecture
 
@@ -35,8 +43,10 @@ js/
     google-auth.js         Google Identity Services token flow
     sheets-api.js          Thin Google Sheets REST client
     tracker-repository.js  Maps tracker data to the spreadsheet layout
+    smoke-repository.js    Maps attempts, savings settings and cravings to the "Sin fumar" tab
   domain/
     stats.js               Pure calculations: weeks, averages, goal progress
+    smoke.js               Pure calculations: smoke-free days, savings, milestones, cravings, achievements
   components/              One module per UI component, matching css/components
 ```
 
@@ -58,6 +68,8 @@ Components never call Google directly, and `domain/` never touches the DOM.
 - No raw values in components: colors, spacing, radii and font sizes come from `tokens.css`.
 - `--accent` lets the markup pick a component's color (`style="--accent: var(--color-aqua)"`).
 - Colors use `light-dark()`, so each token is declared once for both themes. Canvas charts resolve them through `core/theme.js`.
+
+**Sections:** the dashboard has two panels (`data-panel="peso"` / `"sin-fumar"`) switched by the URL hash (`#peso`, `#sin-fumar`) through `section-nav.js`.
 
 **Language:** code, comments and docs are in English; user-facing text is in Spanish.
 

@@ -101,337 +101,555 @@
 
       <!-- Dashboard -->
       <main id="dashboard" class="dashboard" hidden>
-        <section class="kpi-grid">
-          <article class="card kpi-card" style="--accent: var(--color-blue)">
-            <div class="head">
-              <span class="icon-chip">
-                <svg viewBox="0 0 24 24">
-                  <path d="M6 3h12l3 18H3z" />
-                  <path d="M12 8v4" />
-                </svg>
-              </span>
-              Último peso
-            </div>
-            <p id="kpiLastWeight" class="value">—</p>
-            <p id="kpiLastDate" class="meta"></p>
-          </article>
-          <article class="card kpi-card" style="--accent: var(--color-violet)">
-            <div class="head">
-              <span class="icon-chip">
-                <svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4" /></svg>
-              </span>
-              Media semana
-            </div>
-            <p id="kpiWeekAvg" class="value">—</p>
-            <p id="kpiWeekAvgDelta" class="meta"></p>
-          </article>
-          <article class="card kpi-card" style="--accent: var(--color-orange)">
-            <div class="head">
-              <span class="icon-chip">
-                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7" /></svg>
-              </span>
-              Mínimo semana
-            </div>
-            <p id="kpiWeekMin" class="value">—</p>
-            <p id="kpiWeekMinDelta" class="meta"></p>
-          </article>
-          <article class="card kpi-card" style="--accent: var(--color-aqua)">
-            <div class="head">
-              <span class="icon-chip">
-                <svg viewBox="0 0 24 24">
-                  <path
-                    d="M4 16v-2.4C4 11.5 3 10.5 3 8c0-2.7 1.5-6 4.5-6C9.4 2 10 3.8 10 5.5c0 3.1-2 5.7-2 8.7V16a2 2 0 1 1-4 0z"
-                  />
-                  <path
-                    d="M20 20v-2.4c0-2.1 1-3.1 1-5.6 0-2.7-1.5-6-4.5-6C14.6 6 14 7.8 14 9.5c0 3.1 2 5.7 2 8.7V20a2 2 0 1 0 4 0z"
-                  />
-                </svg>
-              </span>
-              Pasos / día
-            </div>
-            <p id="kpiSteps" class="value">—</p>
-            <p id="kpiStepsDelta" class="meta"></p>
-          </article>
-        </section>
+        <nav id="sectionNav" class="segmented section-nav" aria-label="Secciones">
+          <a href="#peso">Peso</a>
+          <a href="#sin-fumar">Sin fumar</a>
+        </nav>
 
-        <form id="entryForm" class="card entry-form dashboard-primary" style="--accent: var(--color-violet)">
-          <h2 class="card-title">
-            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-            Registro
-          </h2>
-          <label>
-            Fecha
-            <input id="entryDate" type="date" required />
-          </label>
-          <label>
-            Peso (kg)
-            <input id="entryWeight" type="number" step="0.1" min="0" inputmode="decimal" placeholder="70,5" />
-          </label>
-          <label>
-            Pasos
-            <input id="entrySteps" type="number" min="0" inputmode="numeric" placeholder="12000" />
-          </label>
-          <label>
-            Entreno
-            <input id="entryWorkout" list="workoutTypes" autocomplete="off" placeholder="Ninguno" />
-          </label>
-          <datalist id="workoutTypes"></datalist>
-          <button class="btn">Guardar</button>
-        </form>
-
-        <div class="insight-grid">
-          <!-- Weight goal: progress, pace and forecast -->
-          <section class="card goal-card" style="--accent: var(--color-blue)">
-            <h2 class="card-title">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9" />
-                <circle cx="12" cy="12" r="5" />
-                <circle cx="12" cy="12" r="1" />
-              </svg>
-              Objetivo de peso
-              <button
-                id="editWeightGoal"
-                type="button"
-                class="btn btn-ghost btn-icon btn-sm"
-                aria-label="Editar objetivo de peso"
-                data-tooltip="Editar objetivo de peso"
-              >
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 20h9" />
-                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
-                </svg>
-              </button>
-            </h2>
-            <div id="weightGoalView" hidden>
-              <div class="numbers">
-                <span>
-                  <b id="weightGoalCurrent"></b>
-                  →
-                  <b id="weightGoalTarget"></b>
-                  <small>kg</small>
+        <div class="dashboard" data-panel="peso">
+          <section class="kpi-grid">
+            <article class="card kpi-card" style="--accent: var(--color-blue)">
+              <div class="head">
+                <span class="icon-chip">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M6 3h12l3 18H3z" />
+                    <path d="M12 8v4" />
+                  </svg>
                 </span>
-                <b id="weightGoalPercent" class="highlight"></b>
+                Último peso
               </div>
-              <div
-                class="progress"
-                role="progressbar"
-                aria-label="Progreso hacia el objetivo"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                <i id="weightGoalBar"></i>
-              </div>
-              <p id="weightGoalSummary" class="meta"></p>
-              <dl class="stat-list">
-                <div>
-                  <dt>Ritmo (4 semanas)</dt>
-                  <dd id="weightGoalPace"></dd>
-                </div>
-                <div>
-                  <dt>Llegarías</dt>
-                  <dd id="weightGoalForecast"></dd>
-                </div>
-              </dl>
-            </div>
-            <form id="weightGoalForm" class="goal-form" hidden>
-              <label>
-                Peso objetivo (kg)
-                <input
-                  id="weightGoalInput"
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  inputmode="decimal"
-                  required
-                  placeholder="68,0"
-                />
-              </label>
-              <button class="btn">Guardar</button>
-            </form>
-          </section>
-
-          <!-- Daily step goal: this week's days and recent success rate -->
-          <section class="card goal-card" style="--accent: var(--color-aqua)">
-            <h2 class="card-title">
-              <svg viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 1.4-.9l13 6a1 1 0 0 1 0 1.8L6 16.5" /></svg>
-              Meta de pasos
-              <button
-                id="editStepGoal"
-                type="button"
-                class="btn btn-ghost btn-icon btn-sm"
-                aria-label="Editar meta de pasos"
-                data-tooltip="Editar meta de pasos"
-              >
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 20h9" />
-                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
-                </svg>
-              </button>
-            </h2>
-            <div id="stepGoalView" hidden>
-              <div class="numbers">
-                <span>
-                  <b id="stepGoalValue"></b>
-                  <small>pasos/día</small>
+              <p id="kpiLastWeight" class="value">—</p>
+              <p id="kpiLastDate" class="meta"></p>
+            </article>
+            <article class="card kpi-card" style="--accent: var(--color-violet)">
+              <div class="head">
+                <span class="icon-chip">
+                  <svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4" /></svg>
                 </span>
-                <b id="stepGoalWeekCount" class="highlight"></b>
+                Media semana
               </div>
-              <ol id="stepGoalDays" class="day-dots" aria-label="Meta de pasos esta semana"></ol>
-              <dl class="stat-list">
-                <div>
-                  <dt>Últimas 4 semanas</dt>
-                  <dd id="stepGoalRate"></dd>
-                </div>
-              </dl>
-            </div>
-            <form id="stepGoalForm" class="goal-form" hidden>
-              <label>
-                Meta diaria de pasos
-                <input
-                  id="stepGoalInput"
-                  type="number"
-                  step="500"
-                  min="0"
-                  inputmode="numeric"
-                  required
-                  placeholder="10000"
-                />
-              </label>
-              <button class="btn">Guardar</button>
-            </form>
+              <p id="kpiWeekAvg" class="value">—</p>
+              <p id="kpiWeekAvgDelta" class="meta"></p>
+            </article>
+            <article class="card kpi-card" style="--accent: var(--color-orange)">
+              <div class="head">
+                <span class="icon-chip">
+                  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7" /></svg>
+                </span>
+                Mínimo semana
+              </div>
+              <p id="kpiWeekMin" class="value">—</p>
+              <p id="kpiWeekMinDelta" class="meta"></p>
+            </article>
+            <article class="card kpi-card" style="--accent: var(--color-aqua)">
+              <div class="head">
+                <span class="icon-chip">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M4 16v-2.4C4 11.5 3 10.5 3 8c0-2.7 1.5-6 4.5-6C9.4 2 10 3.8 10 5.5c0 3.1-2 5.7-2 8.7V16a2 2 0 1 1-4 0z"
+                    />
+                    <path
+                      d="M20 20v-2.4c0-2.1 1-3.1 1-5.6 0-2.7-1.5-6-4.5-6C14.6 6 14 7.8 14 9.5c0 3.1 2 5.7 2 8.7V20a2 2 0 1 0 4 0z"
+                    />
+                  </svg>
+                </span>
+                Pasos / día
+              </div>
+              <p id="kpiSteps" class="value">—</p>
+              <p id="kpiStepsDelta" class="meta"></p>
+            </article>
           </section>
 
-          <!-- Steps vs weight: average weekly change in high vs low step weeks -->
-          <section class="card steps-weight-card" style="--accent: var(--color-orange)">
+          <form id="entryForm" class="card entry-form dashboard-primary" style="--accent: var(--color-violet)">
             <h2 class="card-title">
-              <svg viewBox="0 0 24 24">
-                <path d="M7 7h10v10" />
-                <path d="M7 17 17 7" />
-              </svg>
-              Pasos y peso
+              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+              Registro
             </h2>
-            <p class="meta">Cambio medio de peso por semana según tus pasos</p>
-            <div id="stepsWeightRows" class="rows"></div>
-            <p id="stepsWeightSummary" class="summary"></p>
-          </section>
-        </div>
+            <label>
+              Fecha
+              <input id="entryDate" type="date" required />
+            </label>
+            <label>
+              Peso (kg)
+              <input id="entryWeight" type="number" step="0.1" min="0" inputmode="decimal" placeholder="70,5" />
+            </label>
+            <label>
+              Pasos
+              <input id="entrySteps" type="number" min="0" inputmode="numeric" placeholder="12000" />
+            </label>
+            <label>
+              Entreno
+              <input id="entryWorkout" list="workoutTypes" autocomplete="off" placeholder="Ninguno" />
+            </label>
+            <datalist id="workoutTypes"></datalist>
+            <button class="btn">Guardar</button>
+          </form>
 
-        <section>
-          <header class="section-header" style="--accent: var(--color-blue)">
-            <h2>
-              <svg viewBox="0 0 24 24">
-                <path d="M3 3v18h18" />
-                <path d="M7 14l4-4 4 4 5-6" />
-              </svg>
-              Evolución
-            </h2>
-            <div id="chartRange" class="segmented" role="group" aria-label="Periodo de las gráficas">
-              <button type="button" data-range="month">Mes</button>
-              <button type="button" data-range="quarter">3 meses</button>
-              <button type="button" data-range="all">Todo</button>
-            </div>
-          </header>
-          <div class="chart-grid">
-            <section class="card chart-card" style="--accent: var(--color-blue)">
+          <div class="insight-grid">
+            <!-- Weight goal: progress, pace and forecast -->
+            <section class="card goal-card" style="--accent: var(--color-blue)">
               <h2 class="card-title">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <circle cx="12" cy="12" r="5" />
+                  <circle cx="12" cy="12" r="1" />
+                </svg>
+                Objetivo de peso
+                <button
+                  id="editWeightGoal"
+                  type="button"
+                  class="btn btn-ghost btn-icon btn-sm"
+                  aria-label="Editar objetivo de peso"
+                  data-tooltip="Editar objetivo de peso"
+                >
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                  </svg>
+                </button>
+              </h2>
+              <div id="weightGoalView" hidden>
+                <div class="numbers">
+                  <span>
+                    <b id="weightGoalCurrent"></b>
+                    →
+                    <b id="weightGoalTarget"></b>
+                    <small>kg</small>
+                  </span>
+                  <b id="weightGoalPercent" class="highlight"></b>
+                </div>
+                <div
+                  class="progress"
+                  role="progressbar"
+                  aria-label="Progreso hacia el objetivo"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
+                  <i id="weightGoalBar"></i>
+                </div>
+                <p id="weightGoalSummary" class="meta"></p>
+                <dl class="stat-list">
+                  <div>
+                    <dt>Ritmo (4 semanas)</dt>
+                    <dd id="weightGoalPace"></dd>
+                  </div>
+                  <div>
+                    <dt>Llegarías</dt>
+                    <dd id="weightGoalForecast"></dd>
+                  </div>
+                </dl>
+              </div>
+              <form id="weightGoalForm" class="goal-form" hidden>
+                <label>
+                  Peso objetivo (kg)
+                  <input
+                    id="weightGoalInput"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    inputmode="decimal"
+                    required
+                    placeholder="68,0"
+                  />
+                </label>
+                <button class="btn">Guardar</button>
+              </form>
+            </section>
+
+            <!-- Daily step goal: this week's days and recent success rate -->
+            <section class="card goal-card" style="--accent: var(--color-aqua)">
+              <h2 class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 1.4-.9l13 6a1 1 0 0 1 0 1.8L6 16.5" /></svg>
+                Meta de pasos
+                <button
+                  id="editStepGoal"
+                  type="button"
+                  class="btn btn-ghost btn-icon btn-sm"
+                  aria-label="Editar meta de pasos"
+                  data-tooltip="Editar meta de pasos"
+                >
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                  </svg>
+                </button>
+              </h2>
+              <div id="stepGoalView" hidden>
+                <div class="numbers">
+                  <span>
+                    <b id="stepGoalValue"></b>
+                    <small>pasos/día</small>
+                  </span>
+                  <b id="stepGoalWeekCount" class="highlight"></b>
+                </div>
+                <ol id="stepGoalDays" class="day-dots" aria-label="Meta de pasos esta semana"></ol>
+                <dl class="stat-list">
+                  <div>
+                    <dt>Últimas 4 semanas</dt>
+                    <dd id="stepGoalRate"></dd>
+                  </div>
+                </dl>
+              </div>
+              <form id="stepGoalForm" class="goal-form" hidden>
+                <label>
+                  Meta diaria de pasos
+                  <input
+                    id="stepGoalInput"
+                    type="number"
+                    step="500"
+                    min="0"
+                    inputmode="numeric"
+                    required
+                    placeholder="10000"
+                  />
+                </label>
+                <button class="btn">Guardar</button>
+              </form>
+            </section>
+
+            <!-- Steps vs weight: average weekly change in high vs low step weeks -->
+            <section class="card steps-weight-card" style="--accent: var(--color-orange)">
+              <h2 class="card-title">
+                <svg viewBox="0 0 24 24">
+                  <path d="M7 7h10v10" />
+                  <path d="M7 17 17 7" />
+                </svg>
+                Pasos y peso
+              </h2>
+              <p class="meta">Cambio medio de peso por semana según tus pasos</p>
+              <div id="stepsWeightRows" class="rows"></div>
+              <p id="stepsWeightSummary" class="summary"></p>
+            </section>
+          </div>
+
+          <section>
+            <header class="section-header" style="--accent: var(--color-blue)">
+              <h2>
                 <svg viewBox="0 0 24 24">
                   <path d="M3 3v18h18" />
                   <path d="M7 14l4-4 4 4 5-6" />
                 </svg>
-                Peso
+                Evolución
               </h2>
-              <div class="canvas">
-                <canvas id="weightChart" role="img" aria-label="Peso diario, mínimo semanal y media de 7 días"></canvas>
+              <div id="chartRange" class="segmented" role="group" aria-label="Periodo de las gráficas">
+                <button type="button" data-range="month">Mes</button>
+                <button type="button" data-range="quarter">3 meses</button>
+                <button type="button" data-range="all">Todo</button>
               </div>
-            </section>
-            <section class="card chart-card" style="--accent: var(--color-aqua)">
-              <h2 class="card-title">
-                <svg viewBox="0 0 24 24"><path d="M6 20V10M12 20V4M18 20v-6" /></svg>
-                Pasos
-              </h2>
-              <div class="canvas">
-                <canvas id="stepsChart" role="img" aria-label="Pasos diarios y media semanal"></canvas>
-              </div>
-            </section>
-          </div>
-        </section>
+            </header>
+            <div class="chart-grid">
+              <section class="card chart-card" style="--accent: var(--color-blue)">
+                <h2 class="card-title">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M3 3v18h18" />
+                    <path d="M7 14l4-4 4 4 5-6" />
+                  </svg>
+                  Peso
+                </h2>
+                <div class="canvas">
+                  <canvas
+                    id="weightChart"
+                    role="img"
+                    aria-label="Peso diario, mínimo semanal y media de 7 días"
+                  ></canvas>
+                </div>
+              </section>
+              <section class="card chart-card" style="--accent: var(--color-aqua)">
+                <h2 class="card-title">
+                  <svg viewBox="0 0 24 24"><path d="M6 20V10M12 20V4M18 20v-6" /></svg>
+                  Pasos
+                </h2>
+                <div class="canvas">
+                  <canvas id="stepsChart" role="img" aria-label="Pasos diarios y media semanal"></canvas>
+                </div>
+              </section>
+            </div>
+          </section>
 
-        <section>
-          <header class="section-header" style="--accent: var(--color-violet)">
-            <h2>
-              <svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5L12 17l-6.5 4 2-7.5L2 9h7z" /></svg>
-              Hábitos
-            </h2>
-          </header>
-          <div class="insight-grid">
-            <!-- Streaks and logging consistency -->
-            <section class="card streaks-card" style="--accent: var(--color-orange)">
-              <h2 class="card-title">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 22c4 0 7-3 7-7 0-5-5-7-5-13-3 2-5 5-5 8-1-1-2-2-2-4-2 2-2 5-2 9 0 4 3 7 7 7z" />
-                </svg>
-                Constancia
+          <section>
+            <header class="section-header" style="--accent: var(--color-violet)">
+              <h2>
+                <svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5L12 17l-6.5 4 2-7.5L2 9h7z" /></svg>
+                Hábitos
               </h2>
-              <div class="streaks">
-                <div class="streak">
-                  <span class="label">Pesándote</span>
-                  <b id="weighInStreak"></b>
-                  <span id="weighInBest" class="best"></span>
+            </header>
+            <div class="insight-grid">
+              <!-- Streaks and logging consistency -->
+              <section class="card streaks-card" style="--accent: var(--color-orange)">
+                <h2 class="card-title">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 22c4 0 7-3 7-7 0-5-5-7-5-13-3 2-5 5-5 8-1-1-2-2-2-4-2 2-2 5-2 9 0 4 3 7 7 7z" />
+                  </svg>
+                  Constancia
+                </h2>
+                <div class="streaks">
+                  <div class="streak">
+                    <span class="label">Pesándote</span>
+                    <b id="weighInStreak"></b>
+                    <span id="weighInBest" class="best"></span>
+                  </div>
+                  <div class="streak" style="--accent: var(--color-aqua)">
+                    <span class="label">Meta de pasos</span>
+                    <b id="stepStreak"></b>
+                    <span id="stepBest" class="best"></span>
+                  </div>
                 </div>
-                <div class="streak" style="--accent: var(--color-aqua)">
-                  <span class="label">Meta de pasos</span>
-                  <b id="stepStreak"></b>
-                  <span id="stepBest" class="best"></span>
-                </div>
-              </div>
-              <dl class="stat-list">
-                <div>
-                  <dt>Días registrados (4 semanas)</dt>
-                  <dd id="loggingRate"></dd>
-                </div>
-              </dl>
-            </section>
+                <dl class="stat-list">
+                  <div>
+                    <dt>Días registrados (4 semanas)</dt>
+                    <dd id="loggingRate"></dd>
+                  </div>
+                </dl>
+              </section>
 
-            <!-- Average weight and steps per weekday -->
-            <section class="card weekday-card" style="--accent: var(--color-violet)">
-              <h2 class="card-title">
+              <!-- Average weight and steps per weekday -->
+              <section class="card weekday-card" style="--accent: var(--color-violet)">
+                <h2 class="card-title">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <path d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
+                  </svg>
+                  Patrón semanal
+                </h2>
+                <div id="weekdayChart" class="weekday-chart"></div>
+                <p id="weekdaySummary" class="summary"></p>
+              </section>
+
+              <!-- All-time bests -->
+              <section class="card records-card" style="--accent: var(--color-blue)">
+                <h2 class="card-title">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z" />
+                    <path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" />
+                  </svg>
+                  Récords
+                </h2>
+                <dl id="recordsList" class="stat-list records"></dl>
+              </section>
+            </div>
+          </section>
+
+          <section>
+            <header class="section-header" style="--accent: var(--color-orange)">
+              <h2>
                 <svg viewBox="0 0 24 24">
                   <rect x="3" y="4" width="18" height="18" rx="2" />
-                  <path d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
+                  <path d="M16 2v4M8 2v4M3 10h18" />
                 </svg>
-                Patrón semanal
+                Semanas
               </h2>
-              <div id="weekdayChart" class="weekday-chart"></div>
-              <p id="weekdaySummary" class="summary"></p>
-            </section>
+            </header>
+            <div id="weeksGrid" class="weeks-grid"></div>
+            <button id="toggleWeeks" class="btn btn-ghost btn-block" hidden></button>
+          </section>
+        </div>
 
-            <!-- All-time bests -->
-            <section class="card records-card" style="--accent: var(--color-blue)">
-              <h2 class="card-title">
-                <svg viewBox="0 0 24 24">
-                  <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z" />
-                  <path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" />
-                </svg>
-                Récords
-              </h2>
-              <dl id="recordsList" class="stat-list records"></dl>
-            </section>
+        <div class="dashboard" data-panel="sin-fumar" hidden>
+          <!-- Counter of the attempt in progress, next milestone and relapse button -->
+          <section class="card smoke-hero" style="--accent: var(--color-aqua)">
+            <div id="smokeFreeView" class="smoke-hero-view" hidden>
+              <div class="counter">
+                <span class="label">Llevas sin fumar</span>
+                <p>
+                  <b id="smokeFreeDays"></b>
+                  <span id="smokeFreeUnit"></span>
+                </p>
+                <p class="since">
+                  <span id="smokeFreeSince"></span>
+                  <button
+                    id="editSmokeFree"
+                    type="button"
+                    class="btn btn-ghost btn-icon btn-sm"
+                    aria-label="Editar fecha de inicio"
+                    data-tooltip="Editar fecha de inicio"
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                    </svg>
+                  </button>
+                </p>
+              </div>
+              <div class="next">
+                <div class="next-head">
+                  <span>
+                    Próximo hito:
+                    <b id="nextMilestoneTitle"></b>
+                  </span>
+                  <span id="nextMilestoneLeft" class="left"></span>
+                </div>
+                <div
+                  class="progress"
+                  role="progressbar"
+                  aria-label="Progreso hacia el próximo hito"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
+                  <i id="nextMilestoneBar"></i>
+                </div>
+                <p id="nextMilestoneText" class="meta"></p>
+              </div>
+              <button id="smokeFreeReset" type="button" class="btn btn-ghost">He fumado</button>
+            </div>
+            <form id="smokeFreeForm" class="smoke-hero-form" hidden>
+              <h2 class="card-title">¿Desde cuándo no fumas?</h2>
+              <label>
+                Sin fumar desde
+                <input id="smokeFreeInput" type="date" required />
+              </label>
+              <button class="btn">Guardar</button>
+            </form>
+          </section>
+
+          <section class="kpi-grid">
+            <article class="card kpi-card" style="--accent: var(--color-orange)">
+              <div class="head">
+                <span class="icon-chip">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M18 7a7 7 0 1 0 0 10" />
+                    <path d="M4 10h9M4 14h9" />
+                  </svg>
+                </span>
+                Ahorrado
+                <button
+                  id="editSmokeCosts"
+                  type="button"
+                  class="btn btn-ghost btn-icon btn-sm"
+                  aria-label="Editar consumo y precio"
+                  data-tooltip="Editar consumo y precio"
+                >
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                  </svg>
+                </button>
+              </div>
+              <p id="kpiSaved" class="value">—</p>
+              <p id="kpiSavedTotal" class="meta"></p>
+            </article>
+            <article class="card kpi-card" style="--accent: var(--color-blue)">
+              <div class="head">
+                <span class="icon-chip">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"
+                    />
+                  </svg>
+                </span>
+                Vida ganada
+              </div>
+              <p id="kpiLife" class="value">—</p>
+              <p id="kpiAvoidedMeta" class="meta"></p>
+            </article>
+            <article class="card kpi-card" style="--accent: var(--color-aqua)">
+              <div class="head">
+                <span class="icon-chip">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z" />
+                    <path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" />
+                  </svg>
+                </span>
+                Mejor racha
+              </div>
+              <p id="kpiBest" class="value">—</p>
+              <p id="kpiBestMeta" class="meta"></p>
+            </article>
+            <article class="card kpi-card" style="--accent: var(--color-violet)">
+              <div class="head">
+                <span class="icon-chip">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 22c4 0 7-3 7-7 0-5-5-7-5-13-3 2-5 5-5 8-1-1-2-2-2-4-2 2-2 5-2 9 0 4 3 7 7 7z" />
+                  </svg>
+                </span>
+                Antojos (7 días)
+              </div>
+              <p id="kpiCravings" class="value">—</p>
+              <p id="kpiCravingsMeta" class="meta"></p>
+            </article>
+          </section>
+
+          <!-- Two independent columns, so a short card never leaves a gap next to a long one -->
+          <div class="smoke-columns">
+            <div class="column">
+              <!-- Cravings: quick log plus patterns -->
+              <section class="card cravings-card" style="--accent: var(--color-violet)">
+                <h2 class="card-title">
+                  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+                  Apuntar antojo
+                </h2>
+                <form id="cravingForm" class="craving-form">
+                  <fieldset class="intensity">
+                    <legend>
+                      Intensidad
+                      <small>1 leve · 5 muy fuerte</small>
+                    </legend>
+                    <div id="cravingIntensity" class="segmented">
+                      <button type="button" data-value="1" aria-label="1, leve">1</button>
+                      <button type="button" data-value="2">2</button>
+                      <button type="button" data-value="3">3</button>
+                      <button type="button" data-value="4">4</button>
+                      <button type="button" data-value="5" aria-label="5, muy fuerte">5</button>
+                    </div>
+                  </fieldset>
+                  <label>
+                    Situación
+                    <input id="cravingTrigger" list="cravingTriggers" autocomplete="off" placeholder="Café, estrés…" />
+                  </label>
+                  <datalist id="cravingTriggers"></datalist>
+                  <button class="btn">Apuntar</button>
+                </form>
+                <dl class="stat-list">
+                  <div>
+                    <dt>Momento más difícil</dt>
+                    <dd id="cravingsSlot"></dd>
+                  </div>
+                  <div>
+                    <dt>Situación más común</dt>
+                    <dd id="cravingsTrigger"></dd>
+                  </div>
+                </dl>
+              </section>
+
+              <!-- Lifetime achievements: unlocked ones stay; locked ones show their progress -->
+              <section class="card achievements-card" style="--accent: var(--color-violet)">
+                <h2 class="card-title">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 2l3 7h7l-5.5 4.5 2 7.5L12 17l-6.5 4 2-7.5L2 9h7z" />
+                  </svg>
+                  Logros
+                  <span id="achievementsSummary" class="count"></span>
+                </h2>
+                <ul id="achievementsList" class="achievements"></ul>
+              </section>
+            </div>
+            <div class="column">
+              <!-- Every attempt, newest first -->
+              <section class="card records-card" style="--accent: var(--color-blue)">
+                <h2 class="card-title">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                    <path d="M3 3v5h5M12 7v5l3 3" />
+                  </svg>
+                  Historial
+                </h2>
+                <dl id="smokeHistory" class="stat-list records"></dl>
+              </section>
+
+              <!-- Health milestones: what improves at each mark, reached / next / pending -->
+              <section class="card milestones-card" style="--accent: var(--color-aqua)">
+                <h2 class="card-title">
+                  <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="9" r="6" />
+                    <path d="M8.5 14 7 22l5-3 5 3-1.5-8" />
+                  </svg>
+                  Hitos de salud
+                  <span id="milestonesSummary" class="count"></span>
+                </h2>
+                <ol id="milestonesList" class="milestones"></ol>
+              </section>
+            </div>
           </div>
-        </section>
-
-        <section>
-          <header class="section-header" style="--accent: var(--color-orange)">
-            <h2>
-              <svg viewBox="0 0 24 24">
-                <rect x="3" y="4" width="18" height="18" rx="2" />
-                <path d="M16 2v4M8 2v4M3 10h18" />
-              </svg>
-              Semanas
-            </h2>
-          </header>
-          <div id="weeksGrid" class="weeks-grid"></div>
-          <button id="toggleWeeks" class="btn btn-ghost btn-block" hidden></button>
-        </section>
+        </div>
       </main>
     </div>
 
@@ -451,6 +669,68 @@
         <div class="actions">
           <button value="cancel" class="btn btn-ghost" autofocus>Cancelar</button>
           <button id="confirmAccept" value="ok" class="btn"></button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Relapse: confirms and asks what happened. Cancel is type="button" so Enter in the field accepts. -->
+    <dialog id="relapseDialog" class="dialog" aria-labelledby="relapseTitle">
+      <form method="dialog">
+        <h2>
+          <span class="icon-chip" style="--accent: var(--color-orange)">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+          </span>
+          <span id="relapseTitle">¿Has fumado?</span>
+        </h2>
+        <p>El intento actual quedará en el historial y el contador volverá a empezar desde hoy.</p>
+        <label>
+          ¿Qué ha pasado? (opcional)
+          <input id="relapseReason" list="cravingTriggers" autocomplete="off" placeholder="Una cena, estrés…" />
+        </label>
+        <div class="actions">
+          <button id="relapseCancel" type="button" class="btn btn-ghost">Cancelar</button>
+          <button value="ok" class="btn">Reiniciar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Savings settings: cigarettes per day and pack price -->
+    <dialog id="costsDialog" class="dialog" aria-labelledby="costsTitle">
+      <form method="dialog">
+        <h2>
+          <span class="icon-chip" style="--accent: var(--color-orange)">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 7a7 7 0 1 0 0 10" />
+              <path d="M4 10h9M4 14h9" />
+            </svg>
+          </span>
+          <span id="costsTitle">Lo que fumabas</span>
+        </h2>
+        <p>Con esto se calcula el dinero ahorrado y los cigarrillos evitados.</p>
+        <div class="fields">
+          <label>
+            Cigarrillos al día
+            <input id="smokePerDay" type="number" min="1" inputmode="numeric" required placeholder="15" />
+          </label>
+          <label>
+            Precio del paquete (€)
+            <input
+              id="smokePackPrice"
+              type="number"
+              step="0.05"
+              min="0.05"
+              inputmode="decimal"
+              required
+              placeholder="5,50"
+            />
+          </label>
+        </div>
+        <div class="actions">
+          <button id="costsCancel" type="button" class="btn btn-ghost">Cancelar</button>
+          <button value="ok" class="btn">Guardar</button>
         </div>
       </form>
     </dialog>

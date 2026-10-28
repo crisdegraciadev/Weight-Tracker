@@ -6,6 +6,7 @@ import { currentView, store } from './state.js';
 import { mountToast } from './components/toast.js';
 import { mountThemeToggle } from './components/theme-toggle.js';
 import { mountAppHeader } from './components/app-header.js';
+import { mountSectionNav } from './components/section-nav.js';
 import { mountSignIn } from './components/sign-in.js';
 import { mountSheetPicker } from './components/sheet-picker.js';
 import { mountKpiCards } from './components/kpi-cards.js';
@@ -20,10 +21,17 @@ import { mountStreaksCard } from './components/streaks-card.js';
 import { mountWeekdayCard } from './components/weekday-card.js';
 import { mountRecordsCard } from './components/records-card.js';
 import { mountWeeksList } from './components/weeks-list.js';
+import { mountSmokeHero } from './components/smoke-hero.js';
+import { mountSmokeKpis } from './components/smoke-kpis.js';
+import { mountSmokeHistory } from './components/smoke-history.js';
+import { mountMilestonesCard } from './components/milestones-card.js';
+import { mountAchievementsCard } from './components/achievements-card.js';
+import { mountCravingsCard } from './components/cravings-card.js';
 
 mountToast();
 mountThemeToggle();
 mountAppHeader();
+mountSectionNav();
 mountSignIn();
 mountSheetPicker();
 mountKpiCards();
@@ -38,6 +46,12 @@ mountStreaksCard();
 mountWeekdayCard();
 mountRecordsCard();
 mountWeeksList();
+mountSmokeHero();
+mountSmokeKpis();
+mountSmokeHistory();
+mountMilestonesCard();
+mountAchievementsCard();
+mountCravingsCard();
 
 const isDashboard = () => currentView(store.get()) === 'dashboard';
 

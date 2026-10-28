@@ -1,4 +1,4 @@
-/* Native <dialog> used for confirmations */
+/* Native <dialog> used for confirmations and short prompts */
 .dialog {
   width: calc(100% - 32px);
   max-width: 420px;
@@ -26,6 +26,21 @@
     margin-bottom: var(--space-5);
     font-size: 14px;
     color: var(--color-text-secondary);
+  }
+
+  label,
+  .fields {
+    margin-bottom: var(--space-5);
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+
+    label {
+      margin: 0;
+    }
   }
 
   .actions {

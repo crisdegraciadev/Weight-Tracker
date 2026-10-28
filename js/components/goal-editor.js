@@ -9,9 +9,10 @@ import { store } from '../state.js';
  * @param stateKey  store key holding the goal value (e.g. 'weightGoal')
  * @param prefix    element id prefix: `${prefix}View`, `${prefix}Form`, `${prefix}Input`
  * @param editId    id of the edit (pencil) button
- * @param save      (value: number) => Promise
+ * @param save      (value) => Promise
+ * @param parse     turns the input's text into the saved value
  */
-export function mountGoalEditor({ stateKey, prefix, editId, save }) {
+export function mountGoalEditor({ stateKey, prefix, editId, save, parse = Number }) {
   const view = $(`${prefix}View`);
   const form = $(`${prefix}Form`);
   const input = $(`${prefix}Input`);
@@ -37,6 +38,6 @@ export function mountGoalEditor({ stateKey, prefix, editId, save }) {
 
   on(form, 'submit', e => {
     e.preventDefault();
-    return save(Number(input.value));
+    return save(parse(input.value));
   });
 }

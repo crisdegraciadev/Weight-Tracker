@@ -1,0 +1,92 @@
+/*
+ * Health milestones as a vertical timeline.
+ * Filled check = reached, accent ring = next, dashed ring = pending: the shape differs too,
+ * so color is never the only cue.
+ */
+.milestones-card {
+  .count {
+    margin-left: auto;
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--color-text-muted);
+  }
+
+  .milestones {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      gap: 2px var(--space-3);
+      align-items: center;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border);
+
+      &:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      grid-row: span 2;
+      align-self: start;
+      width: 28px;
+      height: 28px;
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: 700;
+    }
+
+    b {
+      font-size: var(--text-base);
+    }
+
+    small {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+
+    p {
+      grid-column: 2 / -1;
+      font-size: var(--text-md);
+      color: var(--color-text-secondary);
+    }
+
+    .reached {
+      .mark {
+        border: 2px solid var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      small {
+        color: var(--accent);
+      }
+    }
+
+    .next {
+      .mark {
+        border: 2px solid var(--accent);
+      }
+
+      small {
+        color: var(--accent);
+        font-weight: 600;
+      }
+    }
+
+    .pending {
+      b,
+      p {
+        color: var(--color-text-muted);
+      }
+    }
+  }
+}

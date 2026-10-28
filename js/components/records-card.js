@@ -32,7 +32,8 @@ export function mountRecordsCard() {
   });
 }
 
-function row(label, value, detail) {
+/** <div><dt>label</dt><dd>value <small>detail</small></dd></div> */
+export function row(label, value, detail) {
   const el = document.createElement('div');
   const dt = document.createElement('dt');
   const dd = document.createElement('dd');

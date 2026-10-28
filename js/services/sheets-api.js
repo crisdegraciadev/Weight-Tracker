@@ -38,15 +38,28 @@ export function batchGet(id, ranges) {
   );
 }
 
-export const updateValues = (id, range, values) =>
-  request(`${id}/values/${encodeURIComponent(range)}?valueInputOption=RAW`, { method: 'PUT', body: { values } });
+/** USER_ENTERED lets Sheets parse ISO dates as real dates. */
+export const updateValues = (id, range, values, valueInputOption = 'RAW') =>
+  request(`${id}/values/${encodeURIComponent(range)}?valueInputOption=${valueInputOption}`, {
+    method: 'PUT',
+    body: { values },
+  });
 
 export const batchUpdateValues = (id, data) =>
   request(`${id}/values:batchUpdate`, { method: 'POST', body: { valueInputOption: 'RAW', data } });
 
-/** Appends rows after the last row with data. USER_ENTERED lets Sheets parse ISO dates as real dates. */
-export const appendValues = (id, range, values) =>
-  request(`${id}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=OVERWRITE`, {
-    method: 'POST',
-    body: { values },
-  });
+/** Structural changes, e.g. { addSheet: { properties: { title } } } */
+export const batchUpdate = (id, requests) => request(`${id}:batchUpdate`, { method: 'POST', body: { requests } });
+
+/**
+ * Appends rows after the last row with data within `range`'s columns.
+ * USER_ENTERED lets Sheets parse ISO dates as real dates.
+ */
+export const appendValues = (id, range, values, valueInputOption = 'USER_ENTERED') =>
+  request(
+    `${id}/values/${encodeURIComponent(range)}:append?valueInputOption=${valueInputOption}&insertDataOption=OVERWRITE`,
+    {
+      method: 'POST',
+      body: { values },
+    },
+  );
