@@ -4,6 +4,9 @@ export const formatNumber = (value, decimals = 1) =>
     ? '—'
     : value.toLocaleString('es-ES', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 
+/** "1.234,56 €" */
+export const formatEuros = value => value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+
 /** Change badge (sign + arrow + color). `lowerIsBetter` is true for weight, false for steps. */
 export function deltaPill(delta, { decimals = 1, unit = '', lowerIsBetter = true } = {}) {
   if (delta == null) return '';

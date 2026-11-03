@@ -1,6 +1,6 @@
 # Weight Tracker
 
-Static web app to track weight, daily steps and smoke-free days, using a Google Sheet as its database. It reads and writes the sheet directly: changes made in the app show up in the sheet and vice versa (the app reloads when you come back to the tab, or with ↻).
+Static web app to track weight, daily steps, smoke-free days and a fund portfolio, using a Google Sheet as its database. It reads and writes the sheet directly: changes made in the app show up in the sheet and vice versa (the app reloads when you come back to the tab, or with ↻).
 
 No backend, no build step and no npm dependencies: it runs as-is on GitHub Pages.
 
@@ -23,6 +23,17 @@ Everything about quitting smoking lives in a separate tab named **Sin fumar** in
 | E2:F2   | Cigarettes per day and pack price (20 cigarettes), for the savings                         |
 | H:J     | Cravings, one per row: date and time, intensity (1-5), situation                           |
 
+The fund portfolio lives in a tab named **Inversiones** (created from the app). Funds, target weights and types are edited in the sheet; the app updates values and appends contributions and snapshots:
+
+| Columns | Content                                                                                                             |
+| ------- | ------------------------------------------------------------------------------------------------------------------- |
+| A:F     | Funds, one per row: name, ISIN, target weight (20 or 0.2: normalized), value (€), invested before the app (€), type |
+| H:K     | Contributions, one per row: date, fund name, amount (€), note                                                       |
+| M2      | Planned monthly contribution (€)                                                                                    |
+| O:Q     | Snapshots for the evolution chart, one per day values change: date, value (€), invested (€)                         |
+
+The suggested split tops up the most underweight funds first, up to a common level, never sells, rounds to whole euros and skips buys under 10 €. Funds over target by more than 5 points (or 25 % of their own target) get a rebalancing notice. All of it lives in `domain/invest.js` (self-check: `node js/domain/invest.test.js`).
+
 ## Architecture
 
 ```
@@ -44,9 +55,11 @@ js/
     sheets-api.js          Thin Google Sheets REST client
     tracker-repository.js  Maps tracker data to the spreadsheet layout
     smoke-repository.js    Maps attempts, savings settings and cravings to the "Sin fumar" tab
+    invest-repository.js   Maps funds, contributions, monthly amount and snapshots to the "Inversiones" tab
   domain/
     stats.js               Pure calculations: weeks, averages, goal progress
     smoke.js               Pure calculations: smoke-free days, savings, milestones, cravings, achievements
+    invest.js              Pure calculations: weights, returns, contribution split, rebalancing, projection
   components/              One module per UI component, matching css/components
 ```
 
@@ -69,7 +82,7 @@ Components never call Google directly, and `domain/` never touches the DOM.
 - `--accent` lets the markup pick a component's color (`style="--accent: var(--color-aqua)"`).
 - Colors use `light-dark()`, so each token is declared once for both themes. Canvas charts resolve them through `core/theme.js`.
 
-**Sections:** the dashboard has two panels (`data-panel="peso"` / `"sin-fumar"`) switched by the URL hash (`#peso`, `#sin-fumar`) through `section-nav.js`.
+**Sections:** the dashboard has three panels (`data-panel="peso"` / `"sin-fumar"` / `"inversiones"`) switched by the URL hash (`#peso`, `#sin-fumar`, `#inversiones`) through `section-nav.js`.
 
 **Language:** code, comments and docs are in English; user-facing text is in Spanish.
 
@@ -87,7 +100,7 @@ Uses modern platform features (`light-dark()`, CSS nesting, cascade layers, `Map
 4. **Credentials → Create credentials → OAuth client ID** → type _Web application_.
    Under _Authorized JavaScript origins_ add:
    - `https://<your-user>.github.io`
-   - `http://localhost:8000` (for local testing)
+   - `http://localhost:8001` (for local testing)
 5. Copy the Client ID into `CLIENT_ID` in `js/config.js`. It is not a secret and can be committed.
 
 Google will show an "unverified app" warning on sign-in; that is expected for a personal app in Testing mode.
@@ -97,10 +110,10 @@ Google will show an "unverified app" warning on sign-in; that is expected for a 
 The app uses ES modules, so it must be served over http (opening `index.html` from disk does not work):
 
 ```sh
-python3 -m http.server 8000
+python3 -m http.server 8001
 ```
 
-Open <http://localhost:8000>, sign in with Google, paste the sheet URL, pick the tab and you are done.
+Open <http://localhost:8001>, sign in with Google, paste the sheet URL, pick the tab and you are done.
 
 ## 3. Publish on GitHub Pages
 

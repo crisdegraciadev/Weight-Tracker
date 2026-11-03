@@ -1,12 +1,11 @@
 /* Headline figures: money saved, life gained (from cigarettes avoided), best streak and cravings this week. */
 import { $, on } from '../core/dom.js';
 import { today } from '../core/dates.js';
-import { formatNumber } from '../core/format.js';
+import { formatEuros as euros, formatNumber } from '../core/format.js';
 import { attemptDays, cravingStats, currentAttempt, lifeGainedMinutes, savings, smokeStats } from '../domain/smoke.js';
 import * as actions from '../actions.js';
 import { store } from '../state.js';
 
-const euros = value => value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
 const days = n => `${formatNumber(n, 0)} ${n === 1 ? 'día' : 'días'}`;
 
 /** "9<small>d</small> 19<small>h</small>", or hours and minutes under a day. */

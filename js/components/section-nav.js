@@ -1,4 +1,4 @@
-/* Peso / Sin fumar switch. The URL hash picks the section, so links, back button and reloads just work. */
+/* Peso / Sin fumar / Inversiones switch. The URL hash picks the section, so links, back button and reloads just work. */
 import { $, on } from '../core/dom.js';
 import * as actions from '../actions.js';
 import { store } from '../state.js';

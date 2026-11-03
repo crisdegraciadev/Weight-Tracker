@@ -2,13 +2,16 @@
  * App use cases. Components call these; they talk to the services,
  * update the store and notify the user. No DOM access here.
  */
+import { today } from './core/dates.js';
 import { notify } from './core/notify.js';
 import * as auth from './services/google-auth.js';
 import { SessionExpiredError } from './services/sheets-api.js';
 import * as repository from './services/tracker-repository.js';
 import * as smokeRepository from './services/smoke-repository.js';
+import * as investRepository from './services/invest-repository.js';
 import { currentAttempt } from './domain/smoke.js';
 import { buildWeeks } from './domain/stats.js';
+import { portfolio } from './domain/invest.js';
 import { store } from './state.js';
 
 /**
@@ -67,6 +70,11 @@ export function selectSheet(sheet) {
     smokeFreeSince: null,
     smokeCosts: null,
     cravings: [],
+    investTab: false,
+    funds: [],
+    contributions: [],
+    monthlyContribution: null,
+    snapshots: [],
   });
 }
 
@@ -74,8 +82,8 @@ export function selectSheet(sheet) {
 
 export async function reload() {
   const { sheet } = store.get();
-  const [{ days, weightGoal, stepGoal }, { attempts, costs, cravings }] = await withSession(() =>
-    Promise.all([repository.loadTracker(sheet), smokeRepository.loadSmoke(sheet)]),
+  const [{ days, weightGoal, stepGoal }, { attempts, costs, cravings }, invest] = await withSession(() =>
+    Promise.all([repository.loadTracker(sheet), smokeRepository.loadSmoke(sheet), investRepository.loadInvest(sheet)]),
   );
   store.set({
     days,
@@ -86,6 +94,11 @@ export async function reload() {
     smokeFreeSince: currentAttempt(attempts)?.start ?? null,
     smokeCosts: costs,
     cravings,
+    investTab: invest.hasTab,
+    funds: invest.funds,
+    contributions: invest.contributions,
+    monthlyContribution: invest.monthly,
+    snapshots: invest.snapshots,
   });
 }
 
@@ -128,6 +141,44 @@ export const saveSmokeCosts = costs =>
 
 export const addCraving = craving =>
   saveAndReload(() => smokeRepository.addCraving(store.get().sheet, craving), 'Antojo apuntado ✓');
+
+export const createInvestTab = () =>
+  saveAndReload(() => investRepository.ensureTab(store.get().sheet), 'Pestaña «Inversiones» creada ✓');
+
+/** Today's portfolio value and money invested, for the evolution chart. */
+function saveSnapshot(funds, contributions) {
+  const { sheet, snapshots } = store.get();
+  const { total, invested } = portfolio(funds, contributions);
+  return investRepository.saveSnapshot(sheet, snapshots, { date: today(), value: total, invested });
+}
+
+/** `values`: [{ row, value, invested }] — value from the broker, money invested before the app. */
+export function saveFundValues(values) {
+  const { sheet, funds, contributions } = store.get();
+  const updated = funds.map(fund => ({ ...fund, ...values.find(v => v.row === fund.row) }));
+  return saveAndReload(async () => {
+    await investRepository.ensureTab(sheet);
+    await investRepository.saveFunds(sheet, values);
+    await saveSnapshot(updated, contributions);
+  }, 'Valores guardados ✓');
+}
+
+/** `items`: [{ fund, amount }]; `monthly` is remembered as next month's amount. */
+export function addContributions(date, items, monthly) {
+  const { sheet, funds, contributions } = store.get();
+  const updated = funds.map(fund => ({ ...fund, value: fund.value + (items.find(i => i.fund === fund)?.amount ?? 0) }));
+  return saveAndReload(async () => {
+    await investRepository.addContributions(sheet, date, items, monthly);
+    await saveSnapshot(updated, contributions.concat(items.map(({ fund, amount }) => ({ fund: fund.name, amount }))));
+  }, 'Aportación registrada ✓');
+}
+
+export function setInvestRate(rate) {
+  try {
+    localStorage.setItem('investRate', rate);
+  } catch {}
+  store.set({ investRate: rate });
+}
 
 export const showSection = section => store.set({ section });
 

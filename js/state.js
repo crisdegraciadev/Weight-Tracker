@@ -29,8 +29,14 @@ export const store = createStore({
   smokeFreeSince: null, // start of the attempt in progress
   smokeCosts: null, // { perDay, packPrice }
   cravings: [], // { at, intensity, trigger }
+  investTab: false, // whether the "Inversiones" tab exists
+  funds: [], // { row, name, isin, weight, value, invested, type }
+  contributions: [], // { date, fund, amount, note }
+  monthlyContribution: null,
+  snapshots: [], // { row, date, value, invested }
+  investRate: Number(readStorage('investRate') ?? 5), // projection's yearly return, %
   selectedDate: null, // day picked from a week card, shown in the entry form
-  section: 'peso', // 'peso' | 'sin-fumar', from the URL hash
+  section: 'peso', // 'peso' | 'sin-fumar' | 'inversiones', from the URL hash
   theme: 'light', // resolved theme, set by the theme toggle
   chartRange: readStorage('chartRange') ?? 'quarter', // 'month' | 'quarter' | 'all'
 });

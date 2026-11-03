@@ -3,3 +3,8 @@
   position: relative;
   height: 280px;
 }
+
+.chart-card .meta {
+  font-size: var(--text-md);
+  color: var(--color-text-muted);
+}

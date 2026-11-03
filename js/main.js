@@ -27,6 +27,10 @@ import { mountSmokeHistory } from './components/smoke-history.js';
 import { mountMilestonesCard } from './components/milestones-card.js';
 import { mountAchievementsCard } from './components/achievements-card.js';
 import { mountCravingsCard } from './components/cravings-card.js';
+import { mountInvestPlan } from './components/invest-plan.js';
+import { mountInvestSummary } from './components/invest-summary.js';
+import { mountInvestChart, mountInvestTypesChart } from './components/invest-chart.js';
+import { mountInvestProjection } from './components/invest-projection.js';
 
 mountToast();
 mountThemeToggle();
@@ -52,6 +56,11 @@ mountSmokeHistory();
 mountMilestonesCard();
 mountAchievementsCard();
 mountCravingsCard();
+mountInvestPlan();
+mountInvestSummary();
+mountInvestChart();
+mountInvestTypesChart();
+mountInvestProjection();
 
 const isDashboard = () => currentView(store.get()) === 'dashboard';
 

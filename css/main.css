@@ -30,6 +30,7 @@
 @import url('components/milestones-card.css') layer(components);
 @import url('components/achievements-card.css') layer(components);
 @import url('components/cravings-card.css') layer(components);
+@import url('components/invest-plan.css') layer(components);
 @import url('components/week-card.css') layer(components);
 @import url('components/dialog.css') layer(components);
 @import url('components/toast.css') layer(components);
