@@ -10,13 +10,45 @@
     margin-bottom: var(--space-1);
   }
 
+  /* Half-width card: date, intensity, duration / aura, medication / notes / buttons */
+  &.migraine-form {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    .medication {
+      grid-column: span 2;
+    }
+
+    .notes,
+    .actions {
+      grid-column: 1 / -1;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: end;
+      gap: var(--space-2);
+    }
+  }
+
   @media (max-width: 980px) {
-    grid-template-columns: 1fr 1fr;
+    &,
+    &.migraine-form {
+      grid-template-columns: 1fr 1fr;
+    }
 
     label:first-of-type,
     label:last-of-type,
-    .btn {
+    > .btn,
+    .actions {
       grid-column: 1 / -1;
+    }
+
+    .actions .btn {
+      flex: 1;
+    }
+
+    &.migraine-form .medication {
+      grid-column: auto;
     }
   }
 }

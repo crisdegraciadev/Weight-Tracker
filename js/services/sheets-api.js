@@ -29,7 +29,7 @@ export async function request(path, { method = 'GET', body } = {}) {
 /** A1 range prefixed with a quoted sheet (tab) name, e.g. 'My tab'!A2:G */
 export const a1 = (tab, range) => `'${tab.replace(/'/g, "''")}'!${range}`;
 
-export const getSpreadsheet = id => request(`${id}?fields=properties.title,sheets.properties.title`);
+export const getSpreadsheet = id => request(`${id}?fields=properties.title,sheets.properties(title,sheetId)`);
 
 export function batchGet(id, ranges) {
   const query = ranges.map(range => 'ranges=' + encodeURIComponent(range)).join('&');

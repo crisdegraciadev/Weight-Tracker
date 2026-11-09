@@ -7,9 +7,8 @@ import { notify } from './core/notify.js';
 import * as auth from './services/google-auth.js';
 import { SessionExpiredError } from './services/sheets-api.js';
 import * as repository from './services/tracker-repository.js';
-import * as smokeRepository from './services/smoke-repository.js';
+import * as migraineRepository from './services/migraine-repository.js';
 import * as investRepository from './services/invest-repository.js';
-import { currentAttempt } from './domain/smoke.js';
 import { buildWeeks } from './domain/stats.js';
 import { portfolio } from './domain/invest.js';
 import { store } from './state.js';
@@ -66,10 +65,8 @@ export function selectSheet(sheet) {
     weeks: [],
     weightGoal: null,
     stepGoal: null,
-    attempts: [],
-    smokeFreeSince: null,
-    smokeCosts: null,
-    cravings: [],
+    migraines: [],
+    preventives: [],
     investTab: false,
     funds: [],
     contributions: [],
@@ -82,18 +79,20 @@ export function selectSheet(sheet) {
 
 export async function reload() {
   const { sheet } = store.get();
-  const [{ days, weightGoal, stepGoal }, { attempts, costs, cravings }, invest] = await withSession(() =>
-    Promise.all([repository.loadTracker(sheet), smokeRepository.loadSmoke(sheet), investRepository.loadInvest(sheet)]),
+  const [{ days, weightGoal, stepGoal }, migraine, invest] = await withSession(() =>
+    Promise.all([
+      repository.loadTracker(sheet),
+      migraineRepository.loadMigraines(sheet),
+      investRepository.loadInvest(sheet),
+    ]),
   );
   store.set({
     days,
     weightGoal,
     stepGoal,
     weeks: buildWeeks(days),
-    attempts,
-    smokeFreeSince: currentAttempt(attempts)?.start ?? null,
-    smokeCosts: costs,
-    cravings,
+    migraines: migraine.attacks,
+    preventives: migraine.preventives,
     investTab: invest.hasTab,
     funds: invest.funds,
     contributions: invest.contributions,
@@ -117,30 +116,26 @@ export const saveWeightGoal = goal =>
 export const saveStepGoal = goal =>
   saveAndReload(() => repository.saveStepGoal(store.get().sheet, goal), 'Meta de pasos guardada ✓');
 
-/** Starts an attempt, or moves the start of the one in progress. */
-export function saveSmokeFreeSince(date) {
-  const { sheet, attempts } = store.get();
-  const current = currentAttempt(attempts);
-  return saveAndReload(
-    () => (current ? smokeRepository.editStart(sheet, current.row, date) : smokeRepository.startAttempt(sheet, date)),
-    'Fecha guardada ✓',
+export const addMigraine = attack =>
+  saveAndReload(() => migraineRepository.addMigraine(store.get().sheet, attack), 'Migraña apuntada ✓');
+
+export const updateMigraine = (row, attack) =>
+  saveAndReload(() => migraineRepository.updateMigraine(store.get().sheet, row, attack), 'Migraña actualizada ✓');
+
+export const deleteMigraine = row =>
+  saveAndReload(() => migraineRepository.deleteMigraine(store.get().sheet, row), 'Migraña borrada');
+
+export const savePreventive = (row, period) =>
+  saveAndReload(
+    () =>
+      row
+        ? migraineRepository.updatePreventive(store.get().sheet, row, period)
+        : migraineRepository.addPreventive(store.get().sheet, period),
+    'Preventivo guardado ✓',
   );
-}
 
-/** Ends the attempt in progress (with what happened) and starts a new one the same day. */
-export function relapse(date, reason) {
-  const { sheet, attempts } = store.get();
-  return saveAndReload(
-    () => smokeRepository.relapse(sheet, currentAttempt(attempts).row, date, reason),
-    'Contador reiniciado',
-  );
-}
-
-export const saveSmokeCosts = costs =>
-  saveAndReload(() => smokeRepository.saveCosts(store.get().sheet, costs), 'Ahorro guardado ✓');
-
-export const addCraving = craving =>
-  saveAndReload(() => smokeRepository.addCraving(store.get().sheet, craving), 'Antojo apuntado ✓');
+export const deletePreventive = row =>
+  saveAndReload(() => migraineRepository.deletePreventive(store.get().sheet, row), 'Preventivo borrado');
 
 export const createInvestTab = () =>
   saveAndReload(() => investRepository.ensureTab(store.get().sheet), 'Pestaña «Inversiones» creada ✓');

@@ -79,6 +79,22 @@ textarea {
   resize: vertical;
 }
 
+/* Selects drop the native look (Chrome pads and sizes it unlike the other fields) and draw their own chevron */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 36px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
 /*
  * Date inputs drop the native look so every browser sizes them like other fields.
  * Without this, iOS Safari gives them an intrinsic minimum width (overflowing the card),

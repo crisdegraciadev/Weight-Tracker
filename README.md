@@ -1,6 +1,6 @@
 # Weight Tracker
 
-Static web app to track weight, daily steps, smoke-free days and a fund portfolio, using a Google Sheet as its database. It reads and writes the sheet directly: changes made in the app show up in the sheet and vice versa (the app reloads when you come back to the tab, or with ↻).
+Static web app to track weight, daily steps, migraine attacks and a fund portfolio, using a Google Sheet as its database. It reads and writes the sheet directly: changes made in the app show up in the sheet and vice versa (the app reloads when you come back to the tab, or with ↻).
 
 No backend, no build step and no npm dependencies: it runs as-is on GitHub Pages.
 
@@ -15,13 +15,12 @@ Row 1 holds the headers.
 The app only writes columns A, B, D, G and H; the formulas in C, E and F are never touched.
 Goals are stored next to the data: target weight in `I2` (header "Objetivo" in `I1`) and daily step goal in `J2` (header "Objetivo pasos" in `J1`).
 
-Everything about quitting smoking lives in a separate tab named **Sin fumar** in the same spreadsheet (created on the first save). Row 1 holds the headers; three blocks side by side:
+Migraines live in a tab named **Migrañas** (created on the first save). Row 1 holds the headers; two blocks side by side:
 
-| Columns | Content                                                                                    |
-| ------- | ------------------------------------------------------------------------------------------ |
-| A:C     | Attempts, one per row: start date, end date (relapse; empty = in progress), relapse reason |
-| E2:F2   | Cigarettes per day and pack price (20 cigarettes), for the savings                         |
-| H:J     | Cravings, one per row: date and time, intensity (1-5), situation                           |
+| Columns | Content |
+| ------- | ------- |
+| A:F | Attacks, one per row: date, intensity (1-10), duration (h), medication ("Ibuprofeno, Naproxeno"), notes, aura ("Sí" or empty) |
+| H:J | Preventive treatment periods, one per row: drug, from, to (empty = still taking it) |
 
 The fund portfolio lives in a tab named **Inversiones** (created from the app). Funds, target weights and types are edited in the sheet; the app updates values and appends contributions and snapshots:
 
@@ -54,11 +53,11 @@ js/
     google-auth.js         Google Identity Services token flow
     sheets-api.js          Thin Google Sheets REST client
     tracker-repository.js  Maps tracker data to the spreadsheet layout
-    smoke-repository.js    Maps attempts, savings settings and cravings to the "Sin fumar" tab
+    migraine-repository.js Maps migraine attacks and preventive periods to the "Migrañas" tab
     invest-repository.js   Maps funds, contributions, monthly amount and snapshots to the "Inversiones" tab
   domain/
     stats.js               Pure calculations: weeks, averages, goal progress
-    smoke.js               Pure calculations: smoke-free days, savings, milestones, cravings, achievements
+    migraine.js            Pure calculations: days since last attack, medication days, 30-day averages, calendar days
     invest.js              Pure calculations: weights, returns, contribution split, rebalancing, projection
   components/              One module per UI component, matching css/components
 ```
@@ -82,7 +81,7 @@ Components never call Google directly, and `domain/` never touches the DOM.
 - `--accent` lets the markup pick a component's color (`style="--accent: var(--color-aqua)"`).
 - Colors use `light-dark()`, so each token is declared once for both themes. Canvas charts resolve them through `core/theme.js`.
 
-**Sections:** the dashboard has three panels (`data-panel="peso"` / `"sin-fumar"` / `"inversiones"`) switched by the URL hash (`#peso`, `#sin-fumar`, `#inversiones`) through `section-nav.js`.
+**Sections:** the dashboard has three panels (`data-panel="peso"` / `"migranas"` / `"inversiones"`) switched by the URL hash (`#peso`, `#migranas`, `#inversiones`) through `section-nav.js`.
 
 **Language:** code, comments and docs are in English; user-facing text is in Spanish.
 

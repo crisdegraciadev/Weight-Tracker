@@ -19,6 +19,7 @@
   --color-orange: light-dark(#eb6834, #d95926);
   --color-aqua: light-dark(#1baf7a, #199e70);
   --color-violet: light-dark(#6250d6, #9085e9);
+  --color-yellow: light-dark(#d9a21b, #e3b341); /* only for the migraine calendar's mild level */
 
   /* Status */
   --color-good: light-dark(#006300, #0ca30c);

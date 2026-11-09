@@ -6,9 +6,6 @@ const toDate = iso => new Date(iso + 'T00:00:00Z');
 
 export const today = () => new Date().toLocaleDateString('sv');
 
-/** "2026-10-28 14:30", local time */
-export const nowDateTime = () => new Date().toLocaleString('sv').slice(0, 16);
-
 export function addDays(iso, days) {
   const date = toDate(iso);
   date.setUTCDate(date.getUTCDate() + days);
@@ -32,6 +29,3 @@ export const formatDate = (iso, options) => toDate(iso).toLocaleDateString('es-E
 export const fromSheetSerial = serial =>
   new Date(Date.UTC(1899, 11, 30) + Math.round(serial) * 864e5).toISOString().slice(0, 10);
 
-/** Same, keeping the time of day (the fraction): "2026-10-28 14:30". */
-export const fromSheetDateTime = serial =>
-  new Date(Date.UTC(1899, 11, 30) + Math.round(serial * 1440) * 6e4).toISOString().slice(0, 16).replace('T', ' ');

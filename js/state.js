@@ -25,10 +25,8 @@ export const store = createStore({
   weeks: [],
   weightGoal: null,
   stepGoal: null,
-  attempts: [], // smoke-free attempts: { row, start, end }
-  smokeFreeSince: null, // start of the attempt in progress
-  smokeCosts: null, // { perDay, packPrice }
-  cravings: [], // { at, intensity, trigger }
+  migraines: [], // { row, date, intensity, hours, aura, medication, notes }, sorted by date
+  preventives: [], // preventive treatment periods: { row, drug, from, to }, sorted by start
   investTab: false, // whether the "Inversiones" tab exists
   funds: [], // { row, name, isin, weight, value, invested, type }
   contributions: [], // { date, fund, amount, note }
@@ -36,7 +34,7 @@ export const store = createStore({
   snapshots: [], // { row, date, value, invested }
   investRate: Number(readStorage('investRate') ?? 5), // projection's yearly return, %
   selectedDate: null, // day picked from a week card, shown in the entry form
-  section: 'peso', // 'peso' | 'sin-fumar' | 'inversiones', from the URL hash
+  section: 'peso', // 'peso' | 'migranas' | 'inversiones', from the URL hash
   theme: 'light', // resolved theme, set by the theme toggle
   chartRange: readStorage('chartRange') ?? 'quarter', // 'month' | 'quarter' | 'all'
 });
