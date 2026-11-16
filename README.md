@@ -1,4 +1,4 @@
-# Weight Tracker
+# Life Control Manager
 
 Static web app to track weight, daily steps, migraine attacks and a fund portfolio, using a Google Sheet as its database. It reads and writes the sheet directly: changes made in the app show up in the sheet and vice versa (the app reloads when you come back to the tab, or with ↻).
 

@@ -6,7 +6,7 @@
 import { $, on } from '../core/dom.js';
 import { formatDate, today } from '../core/dates.js';
 import { average } from '../domain/stats.js';
-import { migraineDays, monthGrid, periodDays, shiftMonth } from '../domain/migraine.js';
+import { migraineDays, monthGrid, noteLines, periodDays, shiftMonth } from '../domain/migraine.js';
 import { formatNumber } from '../core/format.js';
 import { store } from '../state.js';
 import { calendarDay, plural } from './migraine.js';
@@ -104,7 +104,9 @@ function buildReport({ migraines, preventives }) {
           attack.hours == null ? '—' : `${formatNumber(attack.hours)} h`,
           attack.aura ? 'Sí' : 'No',
           attack.medication || '—',
-          attack.notes,
+          noteLines(attack.notes)
+            .map(line => `• ${line}`)
+            .join('\n'), // one point per line, kept by white-space: pre-line
         ]),
     ),
   );

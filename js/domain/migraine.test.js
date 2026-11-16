@@ -1,6 +1,15 @@
 /* Self-check for the migraine calculations: `node js/domain/migraine.test.js` */
 import assert from 'node:assert/strict';
-import { medicationCount, migraineDays, migraineStats, monthGrid, periodDays, shiftMonth, splitMedications } from './migraine.js';
+import {
+  medicationCount,
+  migraineDays,
+  migraineStats,
+  monthGrid,
+  noteLines,
+  periodDays,
+  shiftMonth,
+  splitMedications,
+} from './migraine.js';
 
 const attacks = [
   { date: '2026-09-20', intensity: 8, hours: 10, medication: 'Ibuprofeno' },
@@ -21,6 +30,10 @@ assert.equal(stats.avgHours, 2); // missing duration doesn't count
 
 assert.equal(migraineStats([], '2026-11-09').daysSinceLast, null);
 assert.deepEqual(splitMedications(' Ibuprofeno ,Naproxeno'), ['Ibuprofeno', 'Naproxeno']);
+
+assert.deepEqual(noteLines('- Náuseas 13:00\n- Cansancio'), ['Náuseas 13:00', 'Cansancio']);
+assert.deepEqual(noteLines('- Me levanto 8:00 - Toma 8-10 mg'), ['Me levanto 8:00', 'Toma 8-10 mg']);
+assert.deepEqual(noteLines(''), []);
 
 assert.equal(medicationCount('Ibuprofeno, Triptán'), 2);
 assert.equal(medicationCount('Ibuprofeno + Triptán +'), 2);

@@ -183,6 +183,18 @@
     small {
       overflow-wrap: anywhere;
     }
+
+    /* Notes, one point per line */
+    .notes {
+      margin: var(--space-1) 0 0;
+      padding-left: 1.1em;
+      font-size: var(--text-sm);
+      overflow-wrap: anywhere;
+
+      li + li {
+        margin-top: 2px;
+      }
+    }
   }
 
   .actions {
@@ -349,6 +361,7 @@
       border-bottom: 1px solid var(--color-border);
       text-align: left;
       vertical-align: top;
+      white-space: pre-line;
     }
 
     th {

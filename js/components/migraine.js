@@ -8,7 +8,9 @@ import {
   migraineDays,
   migraineStats,
   monthGrid,
+  noteLines,
   shiftMonth,
+  splitMedications,
 } from '../domain/migraine.js';
 import * as actions from '../actions.js';
 import { store } from '../state.js';
@@ -35,26 +37,54 @@ export function mountMigraine() {
     intensity: $('migraineIntensity'),
     hours: $('migraineHours'),
     aura: $('migraineAura'),
-    medication: $('migraineMedication'),
     notes: $('migraineNotes'),
   };
   let editingRow = null; // sheet row of the attack being edited; null = adding a new one
+
+  // One select per medication taken that day ("Ibuprofeno, Naproxeno" → two rows). The first row has the "+";
+  // each extra row is a select followed by its own remove button, so the grid pairs them up.
+  const medList = $('migraineMeds');
+  const addMed = $('migraineAddMed');
+  const firstMed = medList.querySelector('select');
+  const medTemplate = firstMed.cloneNode(true);
+  const pickMed = (select, name) => {
+    // Something typed in the sheet that isn't an option (e.g. another drug) stays selectable, so editing keeps it
+    if (![...select.options].some(option => option.value === name)) select.add(new Option(name));
+    select.value = name;
+  };
+  const appendMed = name => {
+    const select = medTemplate.cloneNode(true);
+    pickMed(select, name);
+    medList.append(select);
+    medList.insertAdjacentHTML('beforeend', iconButton('remove-med', 'Quitar medicación', DELETE_ICON, ''));
+    return select;
+  };
+  const setMeds = ([first = '', ...rest]) => {
+    while (addMed.nextElementSibling) addMed.nextElementSibling.remove();
+    pickMed(firstMed, first);
+    rest.forEach(appendMed);
+  };
+  on(addMed, 'click', () => appendMed('').focus());
+  on(medList, 'click', e => {
+    const button = e.target.closest('[data-action="remove-med"]');
+    if (!button) return;
+    e.preventDefault(); // inside the <label>: don't send the click on to the first select
+    button.previousElementSibling.remove();
+    button.remove();
+    addMed.focus();
+  });
 
   /** Back to "add" mode with an empty form, or to "edit" mode filled with `attack`. */
   const setEditing = attack => {
     editingRow = attack?.row ?? null;
     form.reset();
     date.value = attack?.date ?? today();
+    setMeds(splitMedications(attack?.medication ?? ''));
     if (attack) {
       fields.intensity.value = attack.intensity ?? '';
       fields.hours.value = attack.hours ?? '';
       fields.aura.value = attack.aura ? '1' : '';
       fields.notes.value = attack.notes;
-      // Something typed in the sheet that isn't an option (e.g. another drug) stays selectable, so editing keeps it
-      if (![...fields.medication.options].some(option => option.value === attack.medication)) {
-        fields.medication.add(new Option(attack.medication));
-      }
-      fields.medication.value = attack.medication;
     }
     $('migraineFormTitle').textContent = attack ? 'Editar migraña' : 'Apuntar migraña';
     $('migraineSubmit').textContent = attack ? 'Actualizar' : 'Guardar';
@@ -102,10 +132,21 @@ export function mountMigraine() {
           ]
             .filter(Boolean)
             .join(' · ') || '—',
-          [attack.medication, attack.notes].filter(Boolean).join(' · '),
+          attack.medication.replaceAll(', ', ' → '),
         ),
       ),
     );
+    // Notes as a real list, one point per line, below the medications
+    $('migraineList')
+      .querySelectorAll(':scope > div > dd')
+      .forEach((dd, i) => {
+        const lines = noteLines(latest[i].notes);
+        if (!lines.length) return;
+        const list = document.createElement('ul');
+        list.className = 'notes';
+        list.append(...lines.map(line => Object.assign(document.createElement('li'), { textContent: line })));
+        dd.append(list);
+      });
     $('migraineList')
       .querySelectorAll(':scope > div')
       .forEach((el, i) =>
@@ -140,7 +181,10 @@ export function mountMigraine() {
       intensity: Number(fields.intensity.value),
       hours: fields.hours.value === '' ? null : Number(fields.hours.value),
       aura: fields.aura.value === '1',
-      medication: fields.medication.value,
+      medication: [...medList.querySelectorAll('select')]
+        .map(select => select.value)
+        .filter(Boolean)
+        .join(', '),
       notes: fields.notes.value.trim(),
     };
     await (editingRow ? actions.updateMigraine(editingRow, attack) : actions.addMigraine(attack));

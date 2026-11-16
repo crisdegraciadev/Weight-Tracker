@@ -32,6 +32,16 @@ export const splitMedications = medication =>
  * Painkillers on 10+ days a month can cause medication-overuse headache
  * (15+ for simple ones like ibuprofen; 10 is the safe side for every kind).
  */
+/**
+ * Notes written as a list, one point per line or inline ("- Náuseas - Cansancio") → ['Náuseas', 'Cansancio'].
+ * Only " - " with spaces around splits, so "8-10" or "anti-inflamatorio" stay whole.
+ */
+export const noteLines = notes =>
+  notes
+    .split(/\n|\s-\s/)
+    .map(line => line.replace(/^\s*[-•*]\s*/, '').trim())
+    .filter(Boolean);
+
 export const MEDICATION_DAYS_LIMIT = 10;
 
 export const medicationCount = medication => splitMedications(medication).length;

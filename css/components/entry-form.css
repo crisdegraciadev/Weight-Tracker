@@ -10,14 +10,11 @@
     margin-bottom: var(--space-1);
   }
 
-  /* Half-width card: date, intensity, duration / aura, medication / notes / buttons */
+  /* Half-width card: date, intensity, duration, aura / medication / notes / buttons */
   &.migraine-form {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 
-    .medication {
-      grid-column: span 2;
-    }
-
+    .medication,
     .notes,
     .actions {
       grid-column: 1 / -1;
@@ -48,7 +45,29 @@
     }
 
     &.migraine-form .medication {
-      grid-column: auto;
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+/* Medications taken, one per row: select + "+" (dashed) on the first row, select + remove button on the rest */
+.med-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2);
+
+  .btn-icon {
+    width: var(--control-height);
+    height: var(--control-height);
+    color: var(--color-text-secondary);
+  }
+
+  .med-add {
+    border: 1px dashed var(--color-border);
+
+    &:hover {
+      border-color: var(--accent);
+      color: var(--accent);
     }
   }
 }

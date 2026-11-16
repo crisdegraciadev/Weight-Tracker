@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Weight Tracker</title>
+    <title>Life Control Manager</title>
     <link rel="stylesheet" href="css/main.css" />
     <script src="https://accounts.google.com/gsi/client" async></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -21,8 +21,8 @@
             </svg>
           </div>
           <div class="brand-text">
-            <h1>Weight Tracker</h1>
-            <p id="subtitle" class="brand-subtitle">Peso y pasos, sincronizado con Google Sheets</p>
+            <h1>Life Control Manager</h1>
+            <p id="subtitle" class="brand-subtitle">Peso, pasos, migrañas e inversiones, sincronizado con Google Sheets</p>
           </div>
         </div>
         <nav class="app-header-actions">
@@ -519,14 +519,17 @@
                   <option value="1">Sí</option>
                 </select>
               </label>
+              <!-- One select per medication taken, in order; "+" adds another row, each extra row has its own remove button -->
               <label class="medication">
                 Medicación
-                <select id="migraineMedication">
-                  <option value="">Ninguna</option>
-                  <option value="Ibuprofeno">Ibuprofeno</option>
-                  <option value="Naproxeno">Naproxeno</option>
-                  <option value="Ibuprofeno, Naproxeno">Ibuprofeno + Naproxeno</option>
-                </select>
+                <span id="migraineMeds" class="med-list">
+                  <select aria-label="Medicación">
+                    <option value="">Ninguna</option>
+                    <option value="Ibuprofeno">Ibuprofeno</option>
+                    <option value="Naproxeno">Naproxeno</option>
+                  </select>
+                  <button id="migraineAddMed" type="button" class="btn btn-ghost btn-icon med-add" aria-label="Añadir otra medicación" data-tooltip="Añadir otra medicación"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg></button>
+                </span>
               </label>
               <label class="notes">
                 Notas
