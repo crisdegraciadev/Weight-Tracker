@@ -2,15 +2,13 @@
  * App use cases. Components call these; they talk to the services,
  * update the store and notify the user. No DOM access here.
  */
-import { today } from './core/dates.js';
 import { notify } from './core/notify.js';
 import * as auth from './services/google-auth.js';
 import { SessionExpiredError } from './services/sheets-api.js';
 import * as repository from './services/tracker-repository.js';
 import * as migraineRepository from './services/migraine-repository.js';
-import * as investRepository from './services/invest-repository.js';
+import * as expenseRepository from './services/expense-repository.js';
 import { buildWeeks } from './domain/stats.js';
-import { portfolio } from './domain/invest.js';
 import { store } from './state.js';
 
 /**
@@ -67,11 +65,10 @@ export function selectSheet(sheet) {
     stepGoal: null,
     migraines: [],
     preventives: [],
-    investTab: false,
-    funds: [],
-    contributions: [],
-    monthlyContribution: null,
-    snapshots: [],
+    expenses: [],
+    categories: [],
+    recurring: [],
+    spendTarget: null,
   });
 }
 
@@ -79,11 +76,11 @@ export function selectSheet(sheet) {
 
 export async function reload() {
   const { sheet } = store.get();
-  const [{ days, weightGoal, stepGoal }, migraine, invest] = await withSession(() =>
+  const [{ days, weightGoal, stepGoal }, migraine, expense] = await withSession(() =>
     Promise.all([
       repository.loadTracker(sheet),
       migraineRepository.loadMigraines(sheet),
-      investRepository.loadInvest(sheet),
+      expenseRepository.loadExpenses(sheet),
     ]),
   );
   store.set({
@@ -93,11 +90,10 @@ export async function reload() {
     weeks: buildWeeks(days),
     migraines: migraine.attacks,
     preventives: migraine.preventives,
-    investTab: invest.hasTab,
-    funds: invest.funds,
-    contributions: invest.contributions,
-    monthlyContribution: invest.monthly,
-    snapshots: invest.snapshots,
+    expenses: expense.expenses,
+    categories: expense.categories,
+    recurring: expense.recurring,
+    spendTarget: expense.target,
   });
 }
 
@@ -137,43 +133,69 @@ export const savePreventive = (row, period) =>
 export const deletePreventive = row =>
   saveAndReload(() => migraineRepository.deletePreventive(store.get().sheet, row), 'Preventivo borrado');
 
-export const createInvestTab = () =>
-  saveAndReload(() => investRepository.ensureTab(store.get().sheet), 'Pestaña «Inversiones» creada ✓');
+export const saveExpense = (row, expense) =>
+  saveAndReload(
+    () =>
+      row
+        ? expenseRepository.updateExpense(store.get().sheet, row, expense)
+        : expenseRepository.addExpenses(store.get().sheet, [expense]),
+    'Gasto guardado ✓',
+  );
 
-/** Today's portfolio value and money invested, for the evolution chart. */
-function saveSnapshot(funds, contributions) {
-  const { sheet, snapshots } = store.get();
-  const { total, invested } = portfolio(funds, contributions);
-  return investRepository.saveSnapshot(sheet, snapshots, { date: today(), value: total, invested });
+/** Logs several expenses at once, e.g. this month's pending recurring ones. */
+export const addExpenses = expenses =>
+  saveAndReload(
+    () => expenseRepository.addExpenses(store.get().sheet, expenses),
+    expenses.length === 1 ? 'Gasto apuntado ✓' : `${expenses.length} gastos apuntados ✓`,
+  );
+
+export const deleteExpense = row =>
+  saveAndReload(() => expenseRepository.deleteExpense(store.get().sheet, row), 'Gasto borrado');
+
+/** `category`: { name, budget } */
+export const addCategory = category =>
+  saveAndReload(() => expenseRepository.addCategory(store.get().sheet, category), 'Categoría añadida ✓');
+
+/** New name and/or budget; a new name moves its expenses and recurring expenses along. */
+export function updateCategory(category, changes) {
+  const { sheet, expenses, recurring } = store.get();
+  return saveAndReload(
+    () => expenseRepository.updateCategory(sheet, category, changes, expenses, recurring),
+    'Categoría guardada ✓',
+  );
 }
 
-/** `values`: [{ row, value, invested }] — value from the broker, money invested before the app. */
-export function saveFundValues(values) {
-  const { sheet, funds, contributions } = store.get();
-  const updated = funds.map(fund => ({ ...fund, ...values.find(v => v.row === fund.row) }));
-  return saveAndReload(async () => {
-    await investRepository.ensureTab(sheet);
-    await investRepository.saveFunds(sheet, values);
-    await saveSnapshot(updated, contributions);
-  }, 'Valores guardados ✓');
+/** Moves everything in `source` to `target` and deletes `source`. */
+export function mergeCategory(source, target) {
+  const { sheet, expenses, recurring } = store.get();
+  return saveAndReload(
+    () => expenseRepository.mergeCategory(sheet, source, target, expenses, recurring),
+    `«${source.name}» fusionada en «${target.name}» ✓`,
+  );
 }
 
-/** `items`: [{ fund, amount }]; `monthly` is remembered as next month's amount. */
-export function addContributions(date, items, monthly) {
-  const { sheet, funds, contributions } = store.get();
-  const updated = funds.map(fund => ({ ...fund, value: fund.value + (items.find(i => i.fund === fund)?.amount ?? 0) }));
-  return saveAndReload(async () => {
-    await investRepository.addContributions(sheet, date, items, monthly);
-    await saveSnapshot(updated, contributions.concat(items.map(({ fund, amount }) => ({ fund: fund.name, amount }))));
-  }, 'Aportación registrada ✓');
-}
+export const deleteCategory = row =>
+  saveAndReload(() => expenseRepository.deleteCategory(store.get().sheet, row), 'Categoría borrada');
 
-export function setInvestRate(rate) {
-  try {
-    localStorage.setItem('investRate', rate);
-  } catch {}
-  store.set({ investRate: rate });
-}
+export const saveRecurring = (row, item) =>
+  saveAndReload(
+    () =>
+      row
+        ? expenseRepository.updateRecurring(store.get().sheet, row, item)
+        : expenseRepository.addRecurring(store.get().sheet, item),
+    'Gasto fijo guardado ✓',
+  );
+
+export const deleteRecurring = row =>
+  saveAndReload(() => expenseRepository.deleteRecurring(store.get().sheet, row), 'Gasto fijo borrado');
+
+export const saveSpendTarget = target =>
+  saveAndReload(
+    () => expenseRepository.saveTarget(store.get().sheet, target),
+    target == null ? 'Gasto objetivo quitado' : 'Gasto objetivo guardado ✓',
+  );
+
+export const showExpenseMonth = month => store.set({ expenseMonth: month });
 
 export const showSection = section => store.set({ section });
 

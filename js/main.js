@@ -24,10 +24,12 @@ import { mountWeeksList } from './components/weeks-list.js';
 import { mountMigraine } from './components/migraine.js';
 import { mountPreventiveCard } from './components/preventive-card.js';
 import { mountMigraineReport } from './components/migraine-report.js';
-import { mountInvestPlan } from './components/invest-plan.js';
-import { mountInvestSummary } from './components/invest-summary.js';
-import { mountInvestChart, mountInvestTypesChart } from './components/invest-chart.js';
-import { mountInvestProjection } from './components/invest-projection.js';
+import { mountExpenses } from './components/expenses.js';
+import { mountExpenseCategories } from './components/expense-categories.js';
+import { mountExpenseMonth } from './components/expense-month.js';
+import { mountExpenseChart } from './components/expense-chart.js';
+import { mountExpenseRecurring } from './components/expense-recurring.js';
+import { mountExpenseTarget } from './components/expense-target.js';
 
 mountToast();
 mountThemeToggle();
@@ -50,11 +52,12 @@ mountWeeksList();
 mountMigraine();
 mountPreventiveCard();
 mountMigraineReport();
-mountInvestPlan();
-mountInvestSummary();
-mountInvestChart();
-mountInvestTypesChart();
-mountInvestProjection();
+mountExpenses();
+mountExpenseCategories();
+mountExpenseMonth();
+mountExpenseChart();
+mountExpenseRecurring();
+mountExpenseTarget();
 
 const isDashboard = () => currentView(store.get()) === 'dashboard';
 

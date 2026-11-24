@@ -26,8 +26,8 @@
 @import url('components/weekday-card.css') layer(components);
 @import url('components/records-card.css') layer(components);
 @import url('components/progress.css') layer(components);
-@import url('components/invest-plan.css') layer(components);
 @import url('components/week-card.css') layer(components);
 @import url('components/dialog.css') layer(components);
 @import url('components/toast.css') layer(components);
 @import url('components/migraine.css') layer(components);
+@import url('components/expenses.css') layer(components);

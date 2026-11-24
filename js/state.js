@@ -1,5 +1,6 @@
 /* Single app store and derived selectors. */
 import { createStore } from './core/store.js';
+import { today } from './core/dates.js';
 import { isSignedIn } from './services/google-auth.js';
 
 const readStorage = key => {
@@ -27,14 +28,13 @@ export const store = createStore({
   stepGoal: null,
   migraines: [], // { row, date, intensity, hours, aura, medication, notes }, sorted by date
   preventives: [], // preventive treatment periods: { row, drug, from, to }, sorted by start
-  investTab: false, // whether the "Inversiones" tab exists
-  funds: [], // { row, name, isin, weight, value, invested, type }
-  contributions: [], // { date, fund, amount, note }
-  monthlyContribution: null,
-  snapshots: [], // { row, date, value, invested }
-  investRate: Number(readStorage('investRate') ?? 5), // projection's yearly return, %
+  expenses: [], // { row, date, category, amount, concept }, sorted by date
+  categories: [], // expense categories: { row, name, budget }, sorted by name
+  spendTarget: null, // monthly spending target (€)
+  expenseMonth: today().slice(0, 7), // month shown in the expense summary and chart, "2026-11"
+  recurring: [], // recurring expenses: { row, concept, category, amount, day }, sorted by day
   selectedDate: null, // day picked from a week card, shown in the entry form
-  section: 'peso', // 'peso' | 'migranas' | 'inversiones', from the URL hash
+  section: 'peso', // 'peso' | 'migranas' | 'gastos', from the URL hash
   theme: 'light', // resolved theme, set by the theme toggle
   chartRange: readStorage('chartRange') ?? 'quarter', // 'month' | 'quarter' | 'all'
 });

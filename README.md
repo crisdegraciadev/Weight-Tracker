@@ -1,6 +1,6 @@
 # Life Control Manager
 
-Static web app to track weight, daily steps, migraine attacks and a fund portfolio, using a Google Sheet as its database. It reads and writes the sheet directly: changes made in the app show up in the sheet and vice versa (the app reloads when you come back to the tab, or with ↻).
+Static web app to track weight, daily steps, migraine attacks and expenses, using a Google Sheet as its database. It reads and writes the sheet directly: changes made in the app show up in the sheet and vice versa (the app reloads when you come back to the tab, or with ↻).
 
 No backend, no build step and no npm dependencies: it runs as-is on GitHub Pages.
 
@@ -22,16 +22,14 @@ Migraines live in a tab named **Migrañas** (created on the first save). Row 1 h
 | A:F | Attacks, one per row: date, intensity (1-10), duration (h), medication ("Ibuprofeno, Naproxeno"), notes, aura ("Sí" or empty) |
 | H:J | Preventive treatment periods, one per row: drug, from, to (empty = still taking it) |
 
-The fund portfolio lives in a tab named **Inversiones** (created from the app). Funds, target weights and types are edited in the sheet; the app updates values and appends contributions and snapshots:
+Expenses live in a tab named **Gastos** (created on the first save):
 
-| Columns | Content                                                                                                             |
-| ------- | ------------------------------------------------------------------------------------------------------------------- |
-| A:F     | Funds, one per row: name, ISIN, target weight (20 or 0.2: normalized), value (€), invested before the app (€), type |
-| H:K     | Contributions, one per row: date, fund name, amount (€), note                                                       |
-| M2      | Planned monthly contribution (€)                                                                                    |
-| O:Q     | Snapshots for the evolution chart, one per day values change: date, value (€), invested (€)                         |
-
-The suggested split tops up the most underweight funds first, up to a common level, never sells, rounds to whole euros and skips buys under 10 €. Funds over target by more than 5 points (or 25 % of their own target) get a rebalancing notice. All of it lives in `domain/invest.js` (self-check: `node js/domain/invest.test.js`).
+| Columns | Content |
+| ------- | ------- |
+| A:D | Expenses, one per row: date, category name, amount (€), concept |
+| F:G | Categories, one per row: name, monthly budget (€, optional). Renaming one in the app rewrites its expenses; renaming it to an existing name merges them; a category in use can't be deleted |
+| I:L | Recurring expenses, one per row: concept, category name, amount (€), day of the month. One counts as logged when that month has an expense with the same concept and category |
+| N2 | Monthly spending target (€, optional). Each month spent under it counts as saved, over it as overspent |
 
 ## Architecture
 
@@ -54,11 +52,11 @@ js/
     sheets-api.js          Thin Google Sheets REST client
     tracker-repository.js  Maps tracker data to the spreadsheet layout
     migraine-repository.js Maps migraine attacks and preventive periods to the "Migrañas" tab
-    invest-repository.js   Maps funds, contributions, monthly amount and snapshots to the "Inversiones" tab
+    expense-repository.js  Maps expenses, categories and recurring expenses to the "Gastos" tab
   domain/
     stats.js               Pure calculations: weeks, averages, goal progress
     migraine.js            Pure calculations: days since last attack, medication days, 30-day averages, calendar days
-    invest.js              Pure calculations: weights, returns, contribution split, rebalancing, projection
+    expenses.js            Pure calculations: month totals, budgets, monthly series, pending recurring, filters (self-check: `node js/domain/expenses.test.js`)
   components/              One module per UI component, matching css/components
 ```
 
@@ -81,7 +79,7 @@ Components never call Google directly, and `domain/` never touches the DOM.
 - `--accent` lets the markup pick a component's color (`style="--accent: var(--color-aqua)"`).
 - Colors use `light-dark()`, so each token is declared once for both themes. Canvas charts resolve them through `core/theme.js`.
 
-**Sections:** the dashboard has three panels (`data-panel="peso"` / `"migranas"` / `"inversiones"`) switched by the URL hash (`#peso`, `#migranas`, `#inversiones`) through `section-nav.js`.
+**Sections:** the dashboard has three panels (`data-panel="peso"` / `"migranas"` / `"gastos"`) switched by the URL hash (`#peso`, `#migranas`, `#gastos`) through `section-nav.js`.
 
 **Language:** code, comments and docs are in English; user-facing text is in Spanish.
 

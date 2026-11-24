@@ -4,6 +4,7 @@ export const formatNumber = (value, decimals = 1) =>
     ? '—'
     : value.toLocaleString('es-ES', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 
+
 /** "1.234,56 €" */
 export const formatEuros = value => value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
 

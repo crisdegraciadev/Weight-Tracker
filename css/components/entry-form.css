@@ -11,7 +11,8 @@
   }
 
   /* Half-width card: date, intensity, duration, aura / medication / notes / buttons */
-  &.migraine-form {
+  &.migraine-form,
+  &.expense-form {
     grid-template-columns: repeat(4, minmax(0, 1fr));
 
     .medication,
@@ -29,7 +30,8 @@
 
   @media (max-width: 980px) {
     &,
-    &.migraine-form {
+    &.migraine-form,
+    &.expense-form {
       grid-template-columns: 1fr 1fr;
     }
 
